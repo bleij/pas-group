@@ -1,28 +1,30 @@
-import Header from "@/components/layout/Header";
+import HeaderTransparent from "@/components/layout/HeaderTransparent";
+import HeroLanding from "@/components/home/HeroLanding";
+
+import Advantages from "@/components/home/Advantages";
+import Solutions from "@/components/home/Solutions.server";
+import Services from "@/components/home/Services.server";
+import Experience from "@/components/home/Experience.server";
+import Testimonials from "@/components/home/Testimonials.server";
+import About from "@/components/home/About";
+import Certificates from "@/components/home/Certificates.server";
+import Partners from "@/components/home/Partners.server";
+import WorkStages from "@/components/home/WorkStages";
+import News from "@/components/home/News.server";
+import Presentations from "@/components/home/Presentations.server";
+import Contact from "@/components/home/Contact";
 import Footer from "@/components/layout/Footer";
 
-import Hero from "@/components/home/Hero";
-import Advantages from "@/components/home/Advantages";
-import Solutions from "@/components/home/Solutions";
-import Services from "@/components/home/Services";
-import Experience from "@/components/home/Experience";
-import Testimonials from "@/components/home/Testimonials";
-import About from "@/components/home/About";
-import Certificates from "@/components/home/Certificates";
-import Partners from "@/components/home/Partners";
-import WorkStages from "@/components/home/WorkStages";
-import News from "@/components/home/News";
-import Presentations from "@/components/home/Presentations";
-import Contact from "@/components/home/Contact";
-
-export default function HomePage() {
+export default async function HomePage() {
     return (
-        <main className="flex flex-col min-h-screen">
-            {/* Шапка */}
-            <Header/>
+        <main className="flex min-h-screen flex-col">
+            {/* прозрачный хедер только на главной */}
+            <HeaderTransparent/>
+            <HeroLanding/>
 
-            {/* Контентные блоки */}
-            <Hero/>
+            {/* дальше — обычные блоки */}
+            <Partners/>
+
             <Advantages/>
             <Solutions/>
             <Services/>
@@ -35,8 +37,6 @@ export default function HomePage() {
             <News/>
             <Presentations/>
             <Contact/>
-
-            {/* Футер */}
             <Footer/>
         </main>
     );

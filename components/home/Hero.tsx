@@ -16,7 +16,7 @@ export default function Hero({
                                  description = "Поставка, сборка и монтаж трансформаторных подстанций, распределительных устройств и систем электроснабжения. Команда с 29+ годами экспертизы. 12+ лет без инцидентов эксплуатации.",
                                  ctaPrimary = "Получить консультацию",
                                  ctaSecondary = "Получить КП",
-                                 heroImage = "/placeholder-hero.png",
+                                 heroImage = "/hero-bg.png",
                                  partners = [
                                      {id: 1, logo: "/partner1.png", alt: "Партнер 1"},
                                      {id: 2, logo: "/partner2.png", alt: "Партнер 2"},
@@ -25,58 +25,45 @@ export default function Hero({
                                  ],
                              }: HeroProps) {
     return (
-        <section className="w-full px-6 py-12 lg:py-20">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                {/* Левая колонка */}
-                <div className="space-y-6">
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-snug">
-                        {title}
-                    </h1>
-                    <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                        {description}
-                    </p>
+        <section
+            className="relative w-full h-[90vh] flex flex-col justify-between"
+            style={{backgroundImage: `url(${heroImage})`, backgroundSize: "cover", backgroundPosition: "center"}}
+        >
+            {/* Overlay с диагональю */}
+            <div className="absolute inset-0 bg-black/40"/>
+            <div className="absolute inset-0 bg-[#D4AF37]/80 clip-diagonal"/>
+
+            {/* Контент */}
+            <div
+                className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center justify-between h-full">
+                {/* Текст */}
+                <div className="text-white max-w-xl space-y-6 py-20 lg:py-0">
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug">{title}</h1>
+                    <p className="text-base sm:text-lg leading-relaxed">{description}</p>
                     <div className="flex flex-wrap gap-4">
                         <button
-                            className="bg-black text-white px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-900 transition">
+                            className="bg-[#D4AF37] text-white px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:opacity-90 transition">
                             {ctaPrimary}
                         </button>
                         <button
-                            className="bg-gray-200 text-black px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-300 transition">
+                            className="bg-white text-gray-900 px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-100 transition">
                             {ctaSecondary}
                         </button>
-                    </div>
-                </div>
-
-                {/* Правая колонка */}
-                <div className="flex justify-center lg:justify-end">
-                    <div className="w-72 h-72 sm:w-96 sm:h-96 bg-gray-200 rounded-2xl overflow-hidden">
-                        <Image
-                            src={heroImage}
-                            alt="Hero Image"
-                            width={500}
-                            height={500}
-                            className="w-full h-full object-cover"
-                        />
                     </div>
                 </div>
             </div>
 
             {/* Партнёры */}
-            <div className="mt-12">
-                <h2 className="text-center text-lg font-medium mb-6">Наши партнеры</h2>
+            <div className="relative z-10 bg-white/90 py-6">
+                <h2 className="text-center text-lg font-medium mb-6">Наши партнёры</h2>
                 <div className="flex flex-wrap justify-center gap-6">
                     {partners.map((partner) => (
                         <div
                             key={partner.id}
                             className="w-28 h-12 flex items-center justify-center bg-gray-200 rounded-full overflow-hidden"
                         >
-                            <Image
-                                src={partner.logo}
-                                alt={partner.alt}
-                                width={100}
-                                height={40}
-                                className="object-contain"
-                            />
+                            <Image src={partner.logo} alt={partner.alt} width={100} height={40}
+                                   className="object-contain"/>
                         </div>
                     ))}
                 </div>
