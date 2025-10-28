@@ -38,16 +38,35 @@ export const GET_NEWS = /* GraphQL */ `
 
 /* для СТРАНИЦЫ /news (лента). Берём только featuredImage в карточку */
 export const GET_NEWS_INDEX = /* GraphQL */ `
-  query GetNewsIndex($first: Int = 50) {
-    allNews(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
+  query GetNewsIndex($first: Int = 6, $after: String) {
+    allNews(
+      first: $first
+      after: $after
+      where: { status: PUBLISH, orderby: { field: DATE, order: DESC } }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         slug
         title
         date
-        featuredImage { node { sourceUrl altText } }
-        newsFields { shortDescription }
-        newsCategories { nodes { name slug } }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+        newsFields {
+          shortDescription
+        }
+        newsCategories {
+          nodes {
+            name
+          }
+        }
       }
     }
   }

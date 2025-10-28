@@ -28,7 +28,7 @@ export default function CertificatesClient({
                 {title && (
                     <>
                         <h2 className="text-2xl md:text-3xl font-bold mb-4">{title}</h2>
-                        <div className="h-1 w-16 bg-[#163045] mb-8"/>
+                        <div className="h-1 w-32 bg-[#009999] mb-8"/>
                     </>
                 )}
 
@@ -65,7 +65,7 @@ export default function CertificatesClient({
                     <div className="mt-10">
                         <a
                             href={showMoreHref}
-                            className="inline-block px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+                            className="inline-block px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition font-medium text-xl text-[#374151]"
                         >
                             Посмотреть все
                         </a>

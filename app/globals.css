@@ -18,6 +18,10 @@ body {
     line-height: 1.6;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .clip-diagonal {
     clip-path: polygon(0 0, 65% 0, 55% 100%, 0 100%);
 }

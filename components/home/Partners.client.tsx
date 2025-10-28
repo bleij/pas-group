@@ -13,7 +13,7 @@ export default function PartnersClient({partners}: { partners: PartnerNode[] }) 
         <section className="w-full bg-white py-16">
             <div className="max-w-7xl mx-auto px-6">
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">Наши партнёры</h2>
-                <div className="h-1 w-16 bg-blue-900 mb-8"></div>
+                <div className="h-1 w-32 bg-[#009999] mb-8"></div>
 
                 <Swiper
                     modules={[Autoplay]}
@@ -48,7 +48,7 @@ export default function PartnersClient({partners}: { partners: PartnerNode[] }) 
                     <div className="mt-10">
                         <Link
                             href="/partners"
-                            className="inline-block px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+                            className="inline-block px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition font-medium text-xl text-[#374151]"
                         >
                             Смотреть всех
                         </Link>

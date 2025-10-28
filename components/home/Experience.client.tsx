@@ -16,7 +16,8 @@ export default function ExperienceClient({items}: Props) {
     return (
         <section className="w-full bg-white py-16">
             <div className="max-w-7xl mx-auto px-6">
-                <h2 className="text-2xl md:text-3xl font-bold mb-10">Наш опыт</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-6">Наш опыт</h2>
+                <div className="h-1 w-32 bg-[#009999] mb-8"></div>
 
                 {/* mobile slider */}
                 <div className="md:hidden">

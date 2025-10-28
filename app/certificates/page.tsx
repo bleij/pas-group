@@ -20,7 +20,7 @@ export default async function CertificatesPage() {
             <section className="w-full bg-gray-100 py-16">
                 <div className="max-w-7xl mx-auto px-6">
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">Сертификаты</h1>
-                    <div className="h-1 w-16 bg-[#163045] mb-8"></div>
+                    <div className="h-1 w-16 bg-[#009999] mb-8"></div>
                 </div>
                 <CertificatesClient items={items}/>
             </section>

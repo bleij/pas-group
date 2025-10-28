@@ -32,17 +32,17 @@ export default function Advantages() {
                 {/* Текстовая часть */}
                 <div>
                     <h2 className="text-2xl md:text-3xl font-bold mb-8">
-                        <span className="text-blue-900">ЧЕМ МЫ</span> ОТЛИЧАЕМСЯ?
+                        Чем мы отличаемся?
                     </h2>
 
                     <ul className="space-y-6">
                         {items.map((item) => (
                             <li key={item.number} className="flex gap-4">
-                <span className="text-gray-400 font-semibold min-w-[2rem]">
+                <span className="text-lg text-gray-400 font-regular min-w-[2rem]">
                   {item.number}
                 </span>
-                                <p>
-                                    <span className="font-bold">{item.title}: </span>
+                                <p className="text-2xl">
+                                    <span className="font-medium">{item.title}: </span>
                                     {item.text}
                                 </p>
                             </li>
@@ -51,17 +51,27 @@ export default function Advantages() {
 
                     {/* Кнопки */}
                     <div className="mt-10 flex flex-wrap gap-6">
-                        <button className="px-6 py-3 bg-gray-200 rounded-md hover:bg-gray-300 transition">
-                            Скачать перечень брендов
+                        <button className="px-6 py-3 bg-[#009999] text-white rounded-md hover:bg-[#007A7A] transition text-xl">
+                            Скачать презентации
                         </button>
-                        <button className="px-6 py-3 border-b-2 border-black hover:border-gray-500 transition">
+                        <button className="px-6 py-3 border-b-2 border-black hover:border-gray-500 transition text-xl">
                             Сертификаты
                         </button>
                     </div>
                 </div>
 
                 {/* Правая картинка-заглушка */}
-                <div className="bg-gray-200 rounded-2xl w-full h-80 md:h-[420px]"/>
+                <div className="flex justify-end items-start">
+                    <div className="relative rounded-[24px] overflow-hidden w-full md:w-[500px] h-80 md:h-[520px]">
+                        <Image
+                            src="/advantages.png"
+                            alt="Чем мы отличаемся"
+                            fill
+                            className="object-cover object-[75%_center]"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                    </div>
+                </div>
             </div>
         </section>
     );

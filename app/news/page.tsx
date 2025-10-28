@@ -1,6 +1,6 @@
-// app/news/page.tsx
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import SubscribeCard from "@/components/shared/SubscribeCard";
 import {wpRequest} from "@/lib/wp-client";
 import {GET_NEWS_INDEX, type NewsIndexNode} from "@/lib/queries/news";
 import NewsIndexClient from "@/components/news/NewsIndex.client";
@@ -16,26 +16,28 @@ function formatDate(d: string) {
 }
 
 export default async function NewsPage() {
-    const data = await wpRequest<{ allNews: { nodes: NewsIndexNode[] } }>(
+    const data = await wpRequest<{ allNews: { nodes: NewsIndexNode[]; pageInfo?: any } }>(
         GET_NEWS_INDEX,
-        {first: 50}
+        {first: 6}
     );
 
     const nodes = data?.allNews?.nodes ?? [];
+    const pageInfo = data?.allNews?.pageInfo ?? {
+        hasNextPage: false,
+        hasPreviousPage: false,
+        startCursor: null,
+        endCursor: null,
+    };
 
     const posts = nodes.map((p) => {
-        // Берём только featuredImage для карточки
         const raw = p.featuredImage?.node?.sourceUrl || "";
-        // Аккуратно кодируем URL с кириллицей, но не «двойным» энкодом
-        const image =
-            raw && !raw.includes("%") ? encodeURI(raw) : raw || undefined;
-
+        const image = raw && !raw.includes("%") ? encodeURI(raw) : raw || undefined;
         return {
             id: p.id,
             slug: p.slug,
             title: p.title,
             date: formatDate(p.date),
-            image, // <= ВАЖНО: именно "image"
+            image,
             alt: p.featuredImage?.node?.altText || p.title,
             excerpt: p.newsFields?.shortDescription || "",
             categories: p.newsCategories?.nodes?.map((c) => c.name) || [],
@@ -54,9 +56,15 @@ export default async function NewsPage() {
 
                     <h1 className="text-2xl md:text-3xl font-bold mb-6">Новости</h1>
 
-                    <NewsIndexClient posts={posts}/>
+                    {/* ✅ передаём обязательный initialPageInfo */}
+                    <NewsIndexClient posts={posts} initialPageInfo={pageInfo}/>
                 </div>
             </section>
+
+            {/* 🔹 форма подписки внизу — только на мобильных */}
+            <div className="block lg:hidden max-w-7xl mx-auto px-6 mb-12">
+                <SubscribeCard/>
+            </div>
 
             <Footer/>
         </main>

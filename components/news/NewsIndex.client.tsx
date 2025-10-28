@@ -1,50 +1,161 @@
 // components/news/NewsIndex.client.tsx
 "use client";
 
-import {useState, useMemo} from "react";
+import {useState, useMemo, useEffect, useRef} from "react";
 import Image from "next/image";
 import Link from "next/link";
+import SubscribeCard from "@/components/shared/SubscribeCard";
 
 type CardPost = {
     id: string;
     slug: string;
     title: string;
     date: string;
-    image?: string;   // <= ожидаем image (featuredImage)
+    image?: string;
     alt?: string;
     excerpt?: string;
     categories?: string[];
 };
 
-export default function NewsIndexClient({posts}: { posts: CardPost[] }) {
+type PageInfo = {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    endCursor: string | null;
+    startCursor: string | null;
+};
+
+type Prefetched = {
+    posts: CardPost[];
+    pageInfo: PageInfo;
+} | null;
+
+export default function NewsIndexClient({
+                                            posts,
+                                            initialPageInfo,
+                                        }: {
+    posts: CardPost[];
+    initialPageInfo: PageInfo;
+}) {
+    const [allPosts, setAllPosts] = useState<CardPost[]>(posts);
+    const [pageInfo, setPageInfo] = useState<PageInfo>(initialPageInfo);
+    const [loading, setLoading] = useState(false);
+    const [active, setActive] = useState("Все");
+
+    // буфер предзагрузки
+    const prefetchedRef = useRef<Prefetched>(null);
+    const prefetchInFlight = useRef(false);
+
+    // категории
     const allCats = useMemo(() => {
         const set = new Set<string>();
-        posts.forEach((p) => (p.categories || []).forEach((c) => set.add(c)));
+        allPosts.forEach((p) => (p.categories || []).forEach((c) => set.add(c)));
         return ["Все", ...Array.from(set)];
-    }, [posts]);
+    }, [allPosts]);
 
-    const [active, setActive] = useState("Все");
-    const filtered =
-        active === "Все"
-            ? posts
-            : posts.filter((p) => p.categories?.includes(active));
+    const filtered = useMemo(
+        () => (active === "Все" ? allPosts : allPosts.filter((p) => p.categories?.includes(active))),
+        [active, allPosts]
+    );
+
+    // предзагружаем «следующую» страницу сразу после маунта/обновления pageInfo
+    useEffect(() => {
+        if (!pageInfo?.hasNextPage || !pageInfo?.endCursor) {
+            prefetchedRef.current = null;
+            return;
+        }
+        if (prefetchInFlight.current) return;
+
+        prefetchInFlight.current = true;
+        (async () => {
+            try {
+                const res = await fetch("/api/news", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({after: pageInfo.endCursor, first: 6}),
+                });
+                const data = await res.json();
+                const nextPosts: CardPost[] = Array.isArray(data?.posts) ? data.posts : [];
+                const nextInfo: PageInfo =
+                    data?.pageInfo ?? {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null};
+
+                prefetchedRef.current = {posts: nextPosts, pageInfo: nextInfo};
+            } catch (e) {
+                console.error("Prefetch failed:", e);
+                prefetchedRef.current = null;
+            } finally {
+                prefetchInFlight.current = false;
+            }
+        })();
+    }, [pageInfo?.endCursor, pageInfo?.hasNextPage]);
+
+    async function loadMore() {
+        if (loading) return;
+
+        // 1) если есть предзагруженные — используем мгновенно
+        if (prefetchedRef.current && prefetchedRef.current.posts.length > 0) {
+            const {posts: nextPosts, pageInfo: nextInfo} = prefetchedRef.current;
+
+            setAllPosts((prev) => {
+                const merged = [...prev, ...nextPosts];
+                const unique = Array.from(new Map(merged.map((p) => [p.id, p])).values());
+                return unique;
+            });
+            setPageInfo(nextInfo);
+
+            // сразу очищаем буфер и стартуем предзагрузку следующей
+            prefetchedRef.current = null;
+
+            // фоновый префетч запустится сам из useEffect, т.к. мы обновили pageInfo
+            return;
+        }
+
+        // 2) если буфера нет — обычная загрузка
+        if (!pageInfo?.hasNextPage) return;
+        setLoading(true);
+        try {
+            const res = await fetch("/api/news", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({after: pageInfo.endCursor, first: 6}),
+            });
+            const data = await res.json();
+
+            const nextPosts: CardPost[] = Array.isArray(data?.posts) ? data.posts : [];
+            const nextInfo: PageInfo =
+                data?.pageInfo ?? {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null};
+
+            if (nextPosts.length > 0) {
+                setAllPosts((prev) => {
+                    const merged = [...prev, ...nextPosts];
+                    const unique = Array.from(new Map(merged.map((p) => [p.id, p])).values());
+                    return unique;
+                });
+                setPageInfo(nextInfo);
+            }
+        } catch (e) {
+            console.error("loadMore failed:", e);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <section className="w-full bg-white">
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10">
+                {/* основная лента */}
                 <div>
-                    {/* фильтры-чипы */}
-                    <div className="mb-6 -mx-2 overflow-x-auto scrollbar-hide">
+                    {/* фильтры */}
+                    <div className="mb-8 -mx-2 overflow-x-auto scrollbar-hide">
                         <div className="flex gap-3 px-2">
                             {allCats.map((name) => (
                                 <button
                                     key={name}
                                     onClick={() => setActive(name)}
                                     className={[
-                                        "whitespace-nowrap rounded-full px-4 py-2 text-sm",
+                                        "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium",
                                         active === name
-                                            ? "bg-gray-900 text-white"
-                                            : "bg-gray-200 text-gray-900 hover:bg-gray-300",
+                                            ? "bg-[#009999] text-white"
+                                            : "bg-gray-200 text-gray-900 hover:bg-gray-300 transition",
                                     ].join(" ")}
                                 >
                                     {name}
@@ -53,26 +164,31 @@ export default function NewsIndexClient({posts}: { posts: CardPost[] }) {
                         </div>
                     </div>
 
-                    {/* лента */}
-                    <div className="space-y-6">
+                    {/* карточки */}
+                    <div className="space-y-10">
                         {filtered.map((p) => (
                             <Card key={p.id} post={p}/>
                         ))}
                     </div>
+
+                    {/* показать больше */}
+                    {pageInfo?.hasNextPage && (
+                        <div className="mt-12 flex justify-center">
+                            <button
+                                onClick={loadMore}
+                                disabled={loading}
+                                className="px-6 py-3 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-100 text-gray-700 disabled:opacity-40"
+                            >
+                                {loading ? "Загрузка..." : "Показать больше"}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* плейсхолдер под форму справа */}
+                {/* правая колонка — форма подписки */}
                 <aside className="hidden lg:block">
                     <div className="sticky top-24">
-                        <div className="rounded-2xl bg-[#D4AF37] text-white p-6">
-                            <h3 className="font-semibold leading-snug">
-                                Будьте в курсе наших <br/> новостей и акций!
-                            </h3>
-                            <div className="mt-4 h-10 rounded-md bg-white/20"/>
-                            <p className="mt-3 text-xs opacity-80">
-                                Нажимая кнопку, вы даёте согласие <br/> на обработку персональных данных
-                            </p>
-                        </div>
+                        <SubscribeCard/>
                     </div>
                 </aside>
             </div>
@@ -80,12 +196,11 @@ export default function NewsIndexClient({posts}: { posts: CardPost[] }) {
     );
 }
 
+/* ---------- карточка ---------- */
 function SafeImage({src, alt}: { src?: string; alt?: string }) {
     const [fallback, setFallback] = useState(false);
-    if (!src) return <div className="absolute inset-0 bg-slate-300"/>;
-
+    if (!src) return <div className="absolute inset-0 bg-slate-200"/>;
     const safe = src.includes("%") ? src : encodeURI(src);
-
     return fallback ? (
         <img src={safe} alt={alt || ""} className="w-full h-full object-cover"/>
     ) : (
@@ -93,8 +208,8 @@ function SafeImage({src, alt}: { src?: string; alt?: string }) {
             src={safe}
             alt={alt || ""}
             fill
-            className="object-cover group-hover:scale-105 transition-transform"
-            sizes="(max-width:768px) 100vw, 370px"
+            className="object-cover"
+            sizes="(max-width:768px) 100vw, 430px"
             unoptimized
             onError={() => setFallback(true)}
         />
@@ -105,24 +220,44 @@ function Card({post}: { post: CardPost }) {
     return (
         <Link
             href={`/news/${post.slug}`}
-            className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_370px] gap-4 rounded-2xl bg-gray-100 p-4 pr-2 md:pr-4 hover:shadow transition"
+            className="group flex flex-row items-stretch rounded-2xl bg-gray-50
+                 hover:bg-gray-100 transition overflow-hidden"
         >
-            <div className="flex flex-col gap-3">
-                {post.categories?.[0] && (
-                    <span className="inline-block w-fit rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700">
-            {post.categories[0]}
-          </span>
-                )}
-                <h3 className="text-lg md:text-xl font-semibold leading-tight">
+            {/* текстовая часть */}
+            <div className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1">
+                {post.categories?.length ? (
+                    <div className="flex flex-wrap gap-2">
+                        {post.categories.map((cat) => (
+                            <span
+                                key={cat}
+                                className="inline-block bg-gray-200 text-gray-800 text-xs font-medium
+                           px-3 py-1 rounded-full group-hover:bg-[#009999]
+                           group-hover:text-white transition"
+                            >
+                {cat}
+              </span>
+                        ))}
+                    </div>
+                ) : null}
+
+                <h3 className="text-lg md:text-2xl font-bold leading-snug text-gray-900">
                     {post.title}
                 </h3>
+
                 {!!post.excerpt && (
-                    <p className="text-sm text-gray-700 line-clamp-3">{post.excerpt}</p>
+                    <p className="text-sm md:text-base text-gray-700 line-clamp-3">
+                        {post.excerpt}
+                    </p>
                 )}
-                <span className="mt-2 text-xs text-gray-500">{post.date}</span>
+
+                <span className="text-xs text-gray-500 mt-2">{post.date}</span>
             </div>
 
-            <div className="relative h-[190px] md:h-full rounded-xl overflow-hidden">
+            {/* картинка справа — даже на мобилке */}
+            <div
+                className="relative w-[45%] sm:w-[40%] md:w-[430px]
+                   h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
+            >
                 <SafeImage src={post.image} alt={post.alt || post.title}/>
             </div>
         </Link>

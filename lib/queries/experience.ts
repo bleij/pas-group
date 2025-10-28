@@ -1,7 +1,14 @@
-// lib/queries/experience.ts
 export const GET_CASES = /* GraphQL */ `
-  query GetCases {
-    cases(first: 100, where: { orderby: { field: DATE, order: DESC } }) {
+  query GetCases($first: Int = 6, $after: String) {
+    cases(
+      first: $first
+      after: $after
+      where: { orderby: { field: DATE, order: DESC }, status: PUBLISH }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       nodes {
         id
         slug
@@ -30,3 +37,22 @@ export type CaseNode = {
         fullDescription?: string | null;
     } | null;
 };
+
+export const GET_CASE_BY_SLUG = /* GraphQL */ `
+  query GetCaseBySlug($slug: String!) {
+    cases(where: { name: $slug }) {
+      nodes {
+        id
+        slug
+        title
+        featuredImage {
+          node { sourceUrl altText }
+        }
+        caseFields {
+          shortDescription
+          fullDescription
+        }
+      }
+    }
+  }
+`;

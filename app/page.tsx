@@ -5,7 +5,8 @@ import Advantages from "@/components/home/Advantages";
 import Solutions from "@/components/home/Solutions.server";
 import Services from "@/components/home/Services.server";
 import Experience from "@/components/home/Experience.server";
-import Testimonials from "@/components/home/Testimonials.server";
+import Letters from "@/components/home/Letters.server";
+import Documents from "@/components/home/Documents.server";
 import About from "@/components/home/About";
 import Certificates from "@/components/home/Certificates.server";
 import Partners from "@/components/home/Partners.server";
@@ -29,7 +30,8 @@ export default async function HomePage() {
             <Solutions/>
             <Services/>
             <Experience/>
-            <Testimonials/>
+            <Letters/>
+            <Documents/>
             <About/>
             <Certificates/>
             <Partners/>
