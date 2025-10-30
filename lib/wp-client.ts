@@ -1,4 +1,3 @@
-// lib/wp-client.ts
 const endpoint = process.env.WORDPRESS_GRAPHQL_ENDPOINT!;
 if (!endpoint) throw new Error("WORDPRESS_GRAPHQL_ENDPOINT is not set");
 
@@ -29,7 +28,7 @@ function setCache<T>(key: string, data: T): void {
 const inflight = new Map<string, Promise<unknown>>();
 
 // === ограничение параллелизма ===
-const MAX_CONCURRENT = Number(process.env.WP_MAX_CONCURRENT ?? 1);
+let MAX_CONCURRENT = Number(process.env.WP_MAX_CONCURRENT ?? 1);
 let active = 0;
 const queue: Array<() => void> = [];
 
@@ -71,7 +70,7 @@ export async function wpRequest<T>(
     const p = schedule<T>(async () => {
         const body = JSON.stringify({query, variables});
 
-        for (let attempt = 0; attempt < 7; attempt++) {
+        for (let attempt = 0; attempt < 10; attempt++) {
             try {
                 const res = await fetch(endpoint, {
                     method: "POST",
@@ -83,14 +82,24 @@ export async function wpRequest<T>(
                     next: {revalidate},
                 });
 
+                // === 429 Too Many Requests ===
                 if (res.status === 429) {
                     const retryAfter = Number(res.headers.get("retry-after") || 0);
                     const delay =
                         (retryAfter > 0
                             ? retryAfter * 1000
-                            : Math.min(2000 * 2 ** attempt, 15000)) +
+                            : Math.min(2000 * 2 ** attempt, 30000)) +
                         Math.random() * 500;
-                    console.warn(`⚠️ WP 429 Too Many Requests (try ${attempt + 1}) → wait ${Math.round(delay / 1000)}s`);
+                    console.warn(
+                        `⚠️ WP 429 Too Many Requests (try ${attempt + 1}) → wait ${Math.round(delay / 1000)}s`
+                    );
+
+                    // немного расслабляем ограничение при долгих очередях
+                    if (attempt > 5 && MAX_CONCURRENT < 3) {
+                        MAX_CONCURRENT++;
+                        console.warn(`⬆️ увеличен MAX_CONCURRENT до ${MAX_CONCURRENT}`);
+                    }
+
                     await new Promise((r) => setTimeout(r, delay));
                     continue;
                 }
@@ -112,13 +121,15 @@ export async function wpRequest<T>(
             } catch (err) {
                 const error = err instanceof Error ? err.message : String(err);
                 console.error(`⚠️ WP fetch error (attempt ${attempt + 1}):`, error);
-                const delay = Math.min(1500 * (attempt + 1), 8000);
+                const delay = Math.min(2000 * (attempt + 1), 10000);
                 await new Promise((r) => setTimeout(r, delay));
             }
         }
 
         console.error(`❌ WP failed after all retries for query: ${query.slice(0, 50)}...`);
-        return {} as T;
+        const fallback: T = {} as T;
+        setCache(key, fallback);
+        return fallback;
     });
 
     inflight.set(key, p);
