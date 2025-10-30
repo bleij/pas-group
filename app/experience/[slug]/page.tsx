@@ -7,12 +7,9 @@ import SubscribeCard from "@/components/shared/SubscribeCard";
 import {wpRequest} from "@/lib/wp-client";
 import {GET_CASE_BY_SLUG, GET_CASES} from "@/lib/queries/experience";
 
-// типы для параметров страницы
-type PageProps = {
-    params: {
-        slug: string;
-    };
-};
+interface Params {
+    slug: string;
+}
 
 interface CaseFields {
     shortDescription?: string;
@@ -32,27 +29,24 @@ interface CaseNode {
     caseFields?: CaseFields;
 }
 
-interface CaseQueryResponse {
-    cases?: {
-        nodes?: CaseNode[];
-    };
-}
+export default async function CasePage({params}: { params: Promise<Params> }) {
+    const {slug} = await params;
+    const decodedSlug = decodeURIComponent(slug);
 
-export default async function CasePage({params}: PageProps) {
-    const decodedSlug = decodeURIComponent(params.slug);
-
-    const data: CaseQueryResponse = await wpRequest(GET_CASE_BY_SLUG, {
+    // основная запись
+    const data = await wpRequest<{ cases: { nodes: CaseNode[] } }>(GET_CASE_BY_SLUG, {
         slug: decodedSlug,
     });
-
     const post = data?.cases?.nodes?.[0];
     if (!post) return notFound();
 
+    // fallback для изображения
     const cover = post.featuredImage?.node?.sourceUrl || null;
     const coverAlt = post.featuredImage?.node?.altText || post.title;
 
-    const moreData: CaseQueryResponse = await wpRequest(GET_CASES, {first: 3});
-    const moreCases = moreData?.cases?.nodes ?? [];
+    // похожие кейсы
+    const moreData = await wpRequest<{ cases: { nodes: CaseNode[] } }>(GET_CASES, {first: 3});
+    const moreCases = moreData?.cases?.nodes || [];
 
     return (
         <>
@@ -66,58 +60,55 @@ export default async function CasePage({params}: PageProps) {
                         Наш опыт
                     </Link>
                     <span className="mx-1">/</span>
-                    <span dangerouslySetInnerHTML={{__html: post.title}}/>
+                    <span dangerouslySetInnerHTML={{__html: post.title || ""}}/>
                 </nav>
 
                 {/* заголовок */}
                 <h1
                     className="text-3xl md:text-4xl font-bold leading-tight mb-4"
-                    dangerouslySetInnerHTML={{__html: post.title}}
+                    dangerouslySetInnerHTML={{__html: post.title || ""}}
                 />
 
-                {/* обложка */}
+                {/* изображение */}
                 {cover && (
-                    <div
-                        className="mb-12 w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gray-100"
-                        style={{aspectRatio: "16/9", maxHeight: "70vh"}}
-                    >
-                        <div className="relative w-full h-full flex items-center justify-center">
-                            <Image
-                                src={cover}
-                                alt={coverAlt}
-                                width={1400}
-                                height={700}
-                                className="max-h-[70vh] w-auto object-contain rounded-2xl"
-                                priority
-                            />
-                        </div>
+                    <div className="mb-12 w-full flex justify-center bg-gray-100 rounded-2xl overflow-hidden">
+                        <Image
+                            src={cover}
+                            alt={coverAlt || ""}
+                            width={1400}
+                            height={700}
+                            className="w-auto max-h-[70vh] object-contain"
+                            priority
+                        />
                     </div>
                 )}
 
-                {/* две колонки */}
+                {/* контент + форма справа */}
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10 mb-12">
-                    {/* контент */}
-                    <div className="lg:col-span-1">
+                    <div className="prose max-w-none">
                         {post.caseFields?.shortDescription && (
                             <p className="text-lg text-gray-700 mb-6">
                                 {post.caseFields.shortDescription}
                             </p>
                         )}
-
-                        <article
-                            className="prose max-w-none"
+                        <div
                             dangerouslySetInnerHTML={{
                                 __html: post.caseFields?.fullDescription || "",
                             }}
                         />
                     </div>
 
-                    {/* форма справа */}
+                    {/* форма справа (только на десктопе) */}
                     <aside className="hidden lg:block">
                         <div className="sticky top-24">
                             <SubscribeCard/>
                         </div>
                     </aside>
+                </div>
+
+                {/* форма на мобилке */}
+                <div className="mb-10 lg:hidden">
+                    <SubscribeCard/>
                 </div>
 
                 {/* блок “Смотреть больше” */}
@@ -140,7 +131,7 @@ export default async function CasePage({params}: PageProps) {
                                         {p.featuredImage?.node?.sourceUrl && (
                                             <Image
                                                 src={p.featuredImage.node.sourceUrl}
-                                                alt={p.title}
+                                                alt={p.title || ""}
                                                 width={400}
                                                 height={250}
                                                 className="rounded-lg object-cover w-full h-48 group-hover:scale-105 transition-transform"
@@ -172,7 +163,6 @@ export default async function CasePage({params}: PageProps) {
                             ))}
                         </div>
 
-                        {/* кнопка */}
                         <div className="mt-10">
                             <Link
                                 href="/experience"
@@ -180,11 +170,6 @@ export default async function CasePage({params}: PageProps) {
                             >
                                 Все кейсы →
                             </Link>
-                        </div>
-
-                        {/* форма подписки на мобилке */}
-                        <div className="mt-10 lg:hidden">
-                            <SubscribeCard/>
                         </div>
                     </div>
                 </section>

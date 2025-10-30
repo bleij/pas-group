@@ -20,7 +20,7 @@ export default async function AboutPage() {
             {/* прозрачный хедер */}
             <HeaderTransparent/>
 
-            {/* hero-блок (как на макете) */}
+            {/* hero-блок */}
             <HeroLanding
                 bg="/about-bg.png"
                 title="О компании"
@@ -36,8 +36,6 @@ export default async function AboutPage() {
                 overlayMobileClip="polygon(0 0, 70% 0, 90% 100%, 0 100%)"
                 overlayMobileWidth="100%"
                 // text
-                titleSize="60px"
-                titleWeight="500"
                 descSize="24px"
                 descWeight="400"
             />

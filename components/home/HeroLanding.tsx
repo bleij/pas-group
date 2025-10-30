@@ -13,14 +13,14 @@ type Props = {
     imgPosMobile?: string;
     imgPosDesktop?: string;
 
-    // плашка desktop
+    // desktop-плашка
     overlayDesktopColor?: string;
     overlayDesktopOpacity?: number;
     overlayDesktopBlur?: string;
     overlayDesktopClip?: string;
     overlayDesktopWidth?: string;
 
-    // плашка mobile
+    // mobile-плашка
     overlayMobileColor?: string;
     overlayMobileOpacity?: number;
     overlayMobileBlur?: string;
@@ -28,6 +28,8 @@ type Props = {
     overlayMobileWidth?: string;
 
     // шрифты
+    titleSize?: string; // ✅ универсальный вариант
+    descSize?: string;  // ✅ универсальный вариант
     titleSizeDesktop?: string;
     titleSizeMobile?: string;
     titleWeight?: string;
@@ -39,28 +41,27 @@ type Props = {
 export default function HeroLanding({
                                         bg = "/hero-bg.png",
                                         title = "Энергетика и автоматизация «под ключ»",
-                                        description = "Поставка, сборка и монтаж трансформаторных подстанций, распределительных устройств и систем электроснабжения. Команда с 29+ годами экспертизы. 12+ лет без инцидентов эксплуатации.",
+                                        description = "Поставка, сборка и монтаж трансформаторных подстанций...",
                                         primaryText = "Получить консультацию",
                                         secondaryText = "Получить КП",
 
                                         imgPosMobile = "87% center",
                                         imgPosDesktop = "center",
 
-                                        // desktop
                                         overlayDesktopColor = "#215491",
                                         overlayDesktopOpacity = 0.3,
                                         overlayDesktopBlur = "2px",
                                         overlayDesktopClip = "polygon(-14% 0, 48% 0, 74% 100%, 10% 100%)",
                                         overlayDesktopWidth = "86%",
 
-                                        // mobile
                                         overlayMobileColor = "#215491",
                                         overlayMobileOpacity = 0.3,
                                         overlayMobileBlur = "2px",
                                         overlayMobileClip = "polygon(0 0, 75% 0, 100% 100%, 0 100%)",
                                         overlayMobileWidth = "100%",
 
-                                        // текст (отдельно для desktop и mobile)
+                                        titleSize = "46px",  // ✅ fallback
+                                        descSize = "20px",   // ✅ fallback
                                         titleSizeDesktop = "46px",
                                         titleSizeMobile = "28px",
                                         titleWeight = "700",
@@ -68,6 +69,10 @@ export default function HeroLanding({
                                         descSizeMobile = "14px",
                                         descWeight = "400",
                                     }: Props) {
+    // автоматически применяем короткие параметры (если есть)
+    const finalTitleDesktop = titleSize || titleSizeDesktop;
+    const finalDescDesktop = descSize || descSizeDesktop;
+
     return (
         <section
             className="relative w-full min-h-[100svh] md:min-h-screen overflow-hidden font-sans"
@@ -78,7 +83,6 @@ export default function HeroLanding({
                 } as React.CSSProperties
             }
         >
-            {/* фон */}
             <Image
                 src={bg}
                 alt="Hero background"
@@ -87,10 +91,9 @@ export default function HeroLanding({
                 className="object-cover [object-position:var(--hero-pos-m)] md:[object-position:var(--hero-pos-d)]"
             />
 
-            {/* затемнение */}
             <div className="absolute inset-0 bg-black/20"/>
 
-            {/* плашка desktop */}
+            {/* desktop-плашка */}
             <div className="pointer-events-none absolute inset-0 hidden md:block">
                 <div
                     className="absolute left-0 top-0 h-full"
@@ -107,7 +110,7 @@ export default function HeroLanding({
                 />
             </div>
 
-            {/* плашка mobile */}
+            {/* mobile-плашка */}
             <div className="pointer-events-none absolute inset-0 md:hidden">
                 <div
                     className="absolute left-0 top-0 h-full"
@@ -127,43 +130,37 @@ export default function HeroLanding({
             {/* контент */}
             <div className="absolute inset-0 z-10">
                 <div className="h-full max-w-[1240px] mx-auto px-6 md:px-0 flex items-center">
-                    <div className="text-white max-w-[480px] md:max-w-[500px] lg:max-w-[520px]">
+                    <div className="text-white max-w-[520px]">
                         <h1
+                            className="leading-[1.12]"
                             style={{
                                 fontWeight: titleWeight,
-                                fontSize: titleSizeMobile, // mobile default
+                                fontSize: titleSizeMobile,
                             }}
-                            className="leading-[1.12] md:text-[unset] md:[font-size:var(--title-d)]"
                         >
               <span
-                  style={
-                      {
-                          "--title-d": titleSizeDesktop,
-                      } as React.CSSProperties
-                  }
-                  className="block md:[font-size:var(--title-d)]"
+                  className="hidden md:inline"
+                  style={{fontSize: finalTitleDesktop}}
               >
                 {title}
               </span>
+                            <span className="md:hidden">{title}</span>
                         </h1>
 
                         <p
+                            className="mt-6 leading-relaxed opacity-95"
                             style={{
                                 fontWeight: descWeight,
                                 fontSize: descSizeMobile,
                             }}
-                            className="mt-6 leading-relaxed opacity-95 md:text-[unset]"
                         >
               <span
-                  style={
-                      {
-                          "--desc-d": descSizeDesktop,
-                      } as React.CSSProperties
-                  }
-                  className="block md:[font-size:var(--desc-d)]"
+                  className="hidden md:inline"
+                  style={{fontSize: finalDescDesktop}}
               >
                 {description}
               </span>
+                            <span className="md:hidden">{description}</span>
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-4 text-lg">
