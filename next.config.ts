@@ -5,7 +5,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const nextConfig: NextConfig = {
     reactStrictMode: !isDev,
     staticPageGenerationTimeout: 600, // 10 минут
-    experimental: {typedRoutes: true},
+    typedRoutes: false,
     images: {
         remotePatterns: [
             {protocol: "https", hostname: "pasgroup.online", pathname: "/wp-content/**"},
