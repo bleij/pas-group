@@ -2,27 +2,31 @@
 const endpoint = process.env.WORDPRESS_GRAPHQL_ENDPOINT!;
 if (!endpoint) throw new Error("WORDPRESS_GRAPHQL_ENDPOINT is not set");
 
-// === DEV in-memory cache (TTL) ===
 const isDev = process.env.NODE_ENV !== "production";
 const DEV_TTL = Number(process.env.WP_DEV_CACHE_TTL ?? 120);
-type CacheEntry = { expires: number; data: any };
-const mem = new Map<string, CacheEntry>();
 
-function getCache(k: string) {
+interface CacheEntry<T> {
+    expires: number;
+    data: T;
+}
+
+const mem = new Map<string, CacheEntry<unknown>>();
+
+function getCache<T>(key: string): T | null {
     if (!isDev || DEV_TTL <= 0) return null;
-    const hit = mem.get(k);
-    if (hit && hit.expires > Date.now()) return hit.data;
-    if (hit) mem.delete(k);
+    const hit = mem.get(key);
+    if (hit && hit.expires > Date.now()) return hit.data as T;
+    if (hit) mem.delete(key);
     return null;
 }
 
-function setCache(k: string, data: any) {
+function setCache<T>(key: string, data: T): void {
     if (!isDev || DEV_TTL <= 0) return;
-    mem.set(k, { expires: Date.now() + DEV_TTL * 1000, data });
+    mem.set(key, {expires: Date.now() + DEV_TTL * 1000, data});
 }
 
 // === дедуп одинаковых запросов ===
-const inflight = new Map<string, Promise<any>>();
+const inflight = new Map<string, Promise<unknown>>();
 
 // === ограничение параллелизма ===
 const MAX_CONCURRENT = Number(process.env.WP_MAX_CONCURRENT ?? 1);
@@ -31,10 +35,11 @@ const queue: Array<() => void> = [];
 
 function schedule<T>(task: () => Promise<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-        const run = async () => {
+        const run = async (): Promise<void> => {
             active++;
             try {
-                resolve(await task());
+                const result = await task();
+                resolve(result);
             } catch (e) {
                 reject(e);
             } finally {
@@ -42,31 +47,29 @@ function schedule<T>(task: () => Promise<T>): Promise<T> {
                 queue.shift()?.();
             }
         };
-        if (active < MAX_CONCURRENT) run();
+        if (active < MAX_CONCURRENT) void run();
         else queue.push(run);
     });
 }
 
-function keyOf(query: string, variables: any) {
-    return JSON.stringify({ query, variables });
+function keyOf(query: string, variables: Record<string, unknown>): string {
+    return JSON.stringify({query, variables});
 }
 
 export async function wpRequest<T>(
     query: string,
-    variables: any = {},
-    { revalidate = Number(process.env.WP_REVALIDATE ?? 600) }: { revalidate?: number } = {}
+    variables: Record<string, unknown> = {},
+    {revalidate = Number(process.env.WP_REVALIDATE ?? 600)}: { revalidate?: number } = {}
 ): Promise<T> {
     const key = keyOf(query, variables);
 
-    // dev cache
-    const devCached = getCache(key);
-    if (devCached) return devCached as T;
+    const cached = getCache<T>(key);
+    if (cached) return cached;
 
-    // dedupe
-    if (inflight.has(key)) return inflight.get(key)!;
+    if (inflight.has(key)) return inflight.get(key) as Promise<T>;
 
     const p = schedule<T>(async () => {
-        const body = JSON.stringify({ query, variables });
+        const body = JSON.stringify({query, variables});
 
         for (let attempt = 0; attempt < 7; attempt++) {
             try {
@@ -77,7 +80,7 @@ export async function wpRequest<T>(
                         "User-Agent": "PAS-NextJS",
                     },
                     body,
-                    next: { revalidate },
+                    next: {revalidate},
                 });
 
                 if (res.status === 429) {
@@ -97,9 +100,8 @@ export async function wpRequest<T>(
                     throw new Error(`WP ${res.status}: ${text.slice(0, 200)}`);
                 }
 
-                const json = await res.json();
-
-                if (json?.errors) {
+                const json = (await res.json()) as { data?: T; errors?: unknown };
+                if (json.errors) {
                     console.error("WP GraphQL errors:", json.errors);
                     throw new Error(`WP GraphQL errors: ${JSON.stringify(json.errors).slice(0, 300)}`);
                 }
@@ -107,16 +109,15 @@ export async function wpRequest<T>(
                 const data = json.data as T;
                 setCache(key, data);
                 return data;
-            } catch (err: any) {
-                // лог ошибок, но не падаем сразу
-                console.error(`⚠️ WP fetch error (attempt ${attempt + 1}):`, err.message);
+            } catch (err) {
+                const error = err instanceof Error ? err.message : String(err);
+                console.error(`⚠️ WP fetch error (attempt ${attempt + 1}):`, error);
                 const delay = Math.min(1500 * (attempt + 1), 8000);
                 await new Promise((r) => setTimeout(r, delay));
             }
         }
 
         console.error(`❌ WP failed after all retries for query: ${query.slice(0, 50)}...`);
-        // возвращаем пустой объект, чтобы Next не падал
         return {} as T;
     });
 

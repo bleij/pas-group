@@ -22,7 +22,7 @@ export default function ExperienceIndexClient({posts}: { posts: CardPost[] }) {
     return (
         <section className="w-full bg-white">
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10">
-                {/* основная колонка */}
+                {/* левая колонка */}
                 <div>
                     <div className="space-y-10">
                         {posts.slice(0, visible).map((p) => (
@@ -53,26 +53,33 @@ export default function ExperienceIndexClient({posts}: { posts: CardPost[] }) {
     );
 }
 
-/* ---------- карточка ---------- */
+/* ---------- безопасное изображение ---------- */
 function SafeImage({src, alt}: { src?: string; alt?: string }) {
     const [fallback, setFallback] = useState(false);
-    if (!src) return <div className="absolute inset-0 bg-slate-200"/>;
+    if (!src) {
+        return <div className="absolute inset-0 bg-slate-200"/>;
+    }
+
     const safe = src.includes("%") ? src : encodeURI(src);
-    return fallback ? (
-        <img src={safe} alt={alt || ""} className="w-full h-full object-cover"/>
-    ) : (
-        <Image
-            src={safe}
-            alt={alt || ""}
-            fill
-            className="object-cover"
-            sizes="(max-width:768px) 100vw, 430px"
-            unoptimized
-            onError={() => setFallback(true)}
-        />
+
+    return (
+        <div className="relative w-full h-full">
+            <Image
+                src={safe}
+                alt={alt || ""}
+                fill
+                className="object-cover"
+                sizes="(max-width:768px) 100vw, 430px"
+                unoptimized
+                onError={() => setFallback(true)}
+                priority={false}
+            />
+            {fallback && <div className="absolute inset-0 bg-slate-200"/>}
+        </div>
     );
 }
 
+/* ---------- карточка ---------- */
 function Card({post}: { post: CardPost }) {
     return (
         <Link
@@ -80,7 +87,7 @@ function Card({post}: { post: CardPost }) {
             className="group flex flex-row items-stretch rounded-2xl bg-gray-50
                  hover:bg-gray-100 transition overflow-hidden"
         >
-            {/* текстовая часть */}
+            {/* текст */}
             <div className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1">
                 <h3 className="text-lg md:text-2xl font-bold leading-snug text-gray-900">
                     {post.title}
@@ -93,7 +100,7 @@ function Card({post}: { post: CardPost }) {
                 )}
             </div>
 
-            {/* картинка справа */}
+            {/* изображение */}
             <div
                 className="relative w-[45%] sm:w-[40%] md:w-[430px]
                    h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"

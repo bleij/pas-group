@@ -55,20 +55,23 @@ export default function SolutionsIndexClient({posts}: { posts: CardPost[] }) {
 /* ---------- карточка ---------- */
 
 function SafeImage({src, alt}: { src?: string; alt?: string }) {
-    const [fallback, setFallback] = useState(false);
-    if (!src) return <div className="absolute inset-0 bg-slate-200"/>;
-    const safe = src.includes("%") ? src : encodeURI(src);
-    return fallback ? (
-        <img src={safe} alt={alt || ""} className="w-full h-full object-cover"/>
-    ) : (
+    const [hasError, setHasError] = useState(false);
+
+    if (!src || hasError) {
+        return <div className="absolute inset-0 bg-slate-200"/>;
+    }
+
+    const safeSrc = !src.includes("%") ? encodeURI(src) : src;
+
+    return (
         <Image
-            src={safe}
+            src={safeSrc}
             alt={alt || ""}
             fill
             className="object-cover"
             sizes="(max-width:768px) 100vw, 430px"
             unoptimized
-            onError={() => setFallback(true)}
+            onError={() => setHasError(true)}
         />
     );
 }
@@ -77,8 +80,7 @@ function Card({post}: { post: CardPost }) {
     return (
         <Link
             href={`/solutions/${post.slug}`}
-            className="group flex flex-row items-stretch rounded-2xl bg-gray-50
-               hover:bg-gray-100 transition overflow-hidden"
+            className="group flex flex-row items-stretch rounded-2xl bg-gray-50 hover:bg-gray-100 transition overflow-hidden"
         >
             {/* текстовая часть */}
             <div className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1">
@@ -96,7 +98,7 @@ function Card({post}: { post: CardPost }) {
             {/* картинка справа */}
             <div
                 className="relative w-[45%] sm:w-[40%] md:w-[430px]
-                 h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
+          h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
             >
                 <SafeImage src={post.image} alt={post.alt || post.title}/>
             </div>

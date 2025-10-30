@@ -7,6 +7,14 @@ import NewsIndexClient from "@/components/news/NewsIndex.client";
 
 export const revalidate = 60;
 
+// типизация pageInfo, чтобы убрать any
+interface PageInfo {
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    startCursor: string | null;
+    endCursor: string | null;
+}
+
 function formatDate(d: string) {
     const date = new Date(d);
     const dd = String(date.getDate()).padStart(2, "0");
@@ -16,10 +24,9 @@ function formatDate(d: string) {
 }
 
 export default async function NewsPage() {
-    const data = await wpRequest<{ allNews: { nodes: NewsIndexNode[]; pageInfo?: any } }>(
-        GET_NEWS_INDEX,
-        {first: 6}
-    );
+    const data = await wpRequest<{
+        allNews: { nodes: NewsIndexNode[]; pageInfo?: PageInfo };
+    }>(GET_NEWS_INDEX, {first: 6});
 
     const nodes = data?.allNews?.nodes ?? [];
     const pageInfo = data?.allNews?.pageInfo ?? {
