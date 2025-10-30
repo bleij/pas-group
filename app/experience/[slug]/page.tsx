@@ -7,9 +7,12 @@ import SubscribeCard from "@/components/shared/SubscribeCard";
 import {wpRequest} from "@/lib/wp-client";
 import {GET_CASE_BY_SLUG, GET_CASES} from "@/lib/queries/experience";
 
-interface Params {
-    slug: string;
-}
+// типы для параметров страницы
+type PageProps = {
+    params: {
+        slug: string;
+    };
+};
 
 interface CaseFields {
     shortDescription?: string;
@@ -35,18 +38,14 @@ interface CaseQueryResponse {
     };
 }
 
-export default async function CasePage({
-                                           params,
-                                       }: {
-    params: Params;
-}) {
+export default async function CasePage({params}: PageProps) {
     const decodedSlug = decodeURIComponent(params.slug);
 
     const data: CaseQueryResponse = await wpRequest(GET_CASE_BY_SLUG, {
         slug: decodedSlug,
     });
-    const post = data?.cases?.nodes?.[0];
 
+    const post = data?.cases?.nodes?.[0];
     if (!post) return notFound();
 
     const cover = post.featuredImage?.node?.sourceUrl || null;
