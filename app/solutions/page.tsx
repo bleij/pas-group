@@ -4,12 +4,34 @@ import {wpRequest} from "@/lib/wp-client";
 import {GET_SOLUTIONS} from "@/lib/queries/solutions";
 import SolutionsIndexClient from "@/components/solutions/SolutionsIndex.client";
 
-export default async function SolutionsPage() {
-    const data = await wpRequest(GET_SOLUTIONS, {first: 12});
-    const nodes = data?.solutions?.nodes || [];
+// описываем типы для данных с бэка
+interface SolutionNode {
+    id: string;
+    slug: string;
+    title: string;
+    featuredImage?: {
+        node?: {
+            sourceUrl?: string;
+            altText?: string;
+        };
+    };
+    solutionFields?: {
+        shortDescription?: string;
+    };
+}
 
-    // маппим под формат карточки
-    const posts = nodes.map((n: any) => ({
+interface SolutionsQueryResponse {
+    solutions?: {
+        nodes?: SolutionNode[];
+    };
+}
+
+export default async function SolutionsPage() {
+    const data: SolutionsQueryResponse = await wpRequest(GET_SOLUTIONS, {first: 12});
+    const nodes = data?.solutions?.nodes ?? [];
+
+    // типизированное преобразование
+    const posts = nodes.map((n) => ({
         id: n.id,
         slug: n.slug,
         title: n.title,

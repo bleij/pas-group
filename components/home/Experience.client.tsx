@@ -1,4 +1,3 @@
-// components/home/Experience.client.tsx
 "use client";
 
 import {useState} from "react";
@@ -14,14 +13,16 @@ export default function ExperienceClient({items}: Props) {
     const [active, setActive] = useState<CaseNode | null>(null);
 
     return (
-        <section className="w-full bg-white py-16">
-            <div className="max-w-7xl mx-auto px-6">
-                <h2 className="text-2xl md:text-3xl font-bold mb-6">Наш опыт</h2>
-                <div className="h-1 w-32 bg-[#009999] mb-8"></div>
+        <section className="w-full bg-white py-4 sm:py-10 md:py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">
+                    Наш опыт
+                </h2>
+                <div className="h-1 w-24 sm:w-28 md:w-32 bg-[#009999] mb-6 sm:mb-8"></div>
 
                 {/* mobile slider */}
                 <div className="md:hidden">
-                    <Swiper spaceBetween={16} slidesPerView={1.08}>
+                    <Swiper spaceBetween={12} slidesPerView={1.05}>
                         {items.map((c) => (
                             <SwiperSlide key={c.id}>
                                 <Card data={c} onMore={() => setActive(c)}/>
@@ -31,7 +32,7 @@ export default function ExperienceClient({items}: Props) {
                 </div>
 
                 {/* desktop grid */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
                     {items.map((c) => (
                         <Card key={c.id} data={c} onMore={() => setActive(c)}/>
                     ))}
@@ -53,14 +54,14 @@ export default function ExperienceClient({items}: Props) {
                             aria-hidden
                         />
                         <motion.div
-                            className="relative z-10 mx-auto max-w-3xl w-[92%] md:w-[80%] bg-white rounded-2xl p-6 md:p-8"
+                            className="relative z-10 mx-auto max-w-3xl w-[92%] md:w-[80%] bg-white rounded-2xl p-5 sm:p-6 md:p-8"
                             initial={{y: 24, scale: 0.98, opacity: 0}}
                             animate={{y: 0, scale: 1, opacity: 1}}
                             exit={{y: 24, scale: 0.98, opacity: 0}}
                             transition={{duration: 0.18}}
                         >
                             {active.featuredImage?.node?.sourceUrl && (
-                                <div className="relative w-full h-56 md:h-80 mb-6">
+                                <div className="relative w-full h-48 sm:h-56 md:h-80 mb-5 sm:mb-6">
                                     <Image
                                         src={active.featuredImage.node.sourceUrl}
                                         alt={active.featuredImage.node.altText || active.title}
@@ -70,8 +71,10 @@ export default function ExperienceClient({items}: Props) {
                                     />
                                 </div>
                             )}
-                            <h4 className="text-xl md:text-2xl font-bold mb-3">{active.title}</h4>
-                            <p className="text-gray-700 whitespace-pre-line mb-6">
+                            <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3">
+                                {active.title}
+                            </h4>
+                            <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line mb-5 sm:mb-6">
                                 {active.caseFields?.fullDescription ||
                                     active.caseFields?.shortDescription}
                             </p>
@@ -92,7 +95,7 @@ export default function ExperienceClient({items}: Props) {
 function Card({data, onMore}: { data: CaseNode; onMore: () => void }) {
     return (
         <div className="flex flex-col">
-            <div className="relative w-full h-56 md:h-[260px] rounded-2xl overflow-hidden">
+            <div className="relative w-full h-44 sm:h-52 md:h-[260px] rounded-2xl overflow-hidden">
                 {data.featuredImage?.node?.sourceUrl ? (
                     <Image
                         src={data.featuredImage.node.sourceUrl}
@@ -105,17 +108,17 @@ function Card({data, onMore}: { data: CaseNode; onMore: () => void }) {
                 )}
             </div>
 
-            <h3 className="font-semibold text-lg md:text-xl mt-5 mb-2">
+            <h3 className="font-semibold text-base sm:text-lg md:text-xl mt-4 sm:mt-5 mb-1.5 sm:mb-2">
                 {data.title}
             </h3>
 
-            <p className="text-sm text-gray-700 mb-4">
+            <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4 leading-snug">
                 {data.caseFields?.shortDescription}
             </p>
 
             <button
                 onClick={onMore}
-                className="mt-4 px-4 py-2 rounded-md bg-gray-200 text-black font-medium text-sm hover:bg-gray-300 transition self-start"
+                className="mt-3 sm:mt-4 px-4 py-2 rounded-md bg-gray-200 text-black font-medium text-sm hover:bg-gray-300 transition self-start"
             >
                 Подробнее
             </button>

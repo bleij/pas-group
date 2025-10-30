@@ -28,9 +28,11 @@ type Props = {
     overlayMobileWidth?: string;
 
     // шрифты
-    titleSize?: string;
+    titleSizeDesktop?: string;
+    titleSizeMobile?: string;
     titleWeight?: string;
-    descSize?: string;
+    descSizeDesktop?: string;
+    descSizeMobile?: string;
     descWeight?: string;
 };
 
@@ -58,10 +60,12 @@ export default function HeroLanding({
                                         overlayMobileClip = "polygon(0 0, 75% 0, 100% 100%, 0 100%)",
                                         overlayMobileWidth = "100%",
 
-                                        // текст
-                                        titleSize = "46px",
+                                        // текст (отдельно для desktop и mobile)
+                                        titleSizeDesktop = "46px",
+                                        titleSizeMobile = "28px",
                                         titleWeight = "700",
-                                        descSize = "20px",
+                                        descSizeDesktop = "20px",
+                                        descSizeMobile = "14px",
                                         descWeight = "400",
                                     }: Props) {
     return (
@@ -126,22 +130,40 @@ export default function HeroLanding({
                     <div className="text-white max-w-[480px] md:max-w-[500px] lg:max-w-[520px]">
                         <h1
                             style={{
-                                fontSize: titleSize,
                                 fontWeight: titleWeight,
+                                fontSize: titleSizeMobile, // mobile default
                             }}
-                            className="text-[28px] sm:text-[30px] md:text-[32px] leading-[1.12]"
+                            className="leading-[1.12] md:text-[unset] md:[font-size:var(--title-d)]"
                         >
-                            {title}
+              <span
+                  style={
+                      {
+                          "--title-d": titleSizeDesktop,
+                      } as React.CSSProperties
+                  }
+                  className="block md:[font-size:var(--title-d)]"
+              >
+                {title}
+              </span>
                         </h1>
 
                         <p
                             style={{
-                                fontSize: descSize,
                                 fontWeight: descWeight,
+                                fontSize: descSizeMobile,
                             }}
-                            className="mt-6 text-[14px] sm:text-[16px] md:text-[20px] leading-relaxed opacity-95"
+                            className="mt-6 leading-relaxed opacity-95 md:text-[unset]"
                         >
-                            {description}
+              <span
+                  style={
+                      {
+                          "--desc-d": descSizeDesktop,
+                      } as React.CSSProperties
+                  }
+                  className="block md:[font-size:var(--desc-d)]"
+              >
+                {description}
+              </span>
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-4 text-lg">

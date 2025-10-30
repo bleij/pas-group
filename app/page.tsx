@@ -28,7 +28,7 @@ export default async function HomePage() {
 
             <Advantages/>
             <Solutions/>
-            <Services/>
+            <Services limitGroups={2}/>
             <Experience/>
             <Letters/>
             <Documents/>

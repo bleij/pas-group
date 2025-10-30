@@ -4,10 +4,10 @@ import Image from "next/image";
 
 export default function Contact() {
     return (
-        <section id="contact" className="w-full bg-white py-32">
+        <section id="contact" className="w-full bg-white py-8 md:py-16">
             <div className="max-w-7xl mx-auto px-6">
                 {/* заголовок и форма */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 items-start">
                     {/* текстовая часть */}
                     <div>
                         <h2 className="text-2xl md:text-3xl font-bold mb-4">

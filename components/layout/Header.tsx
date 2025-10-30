@@ -4,19 +4,42 @@ import Image from "next/image";
 import Link from "next/link";
 import {Mail, Phone, MapPin, Menu, X} from "lucide-react";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 export default function Header() {
     const [open, setOpen] = useState(false);
+    const router = useRouter();
 
-    const Nav = ({onClick}: { onClick?: () => void }) => (
-        <nav className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-            <Link href="/news" onClick={onClick} className="hover:opacity-80">Новости</Link>
-            <Link href="/services" onClick={onClick} className="hover:opacity-80">Услуги</Link>
-            <Link href="/solutions" onClick={onClick} className="hover:opacity-80">Наши решения</Link>
-            <Link href="/experience" onClick={onClick} className="hover:opacity-80">Наш опыт</Link>
-            <Link href="/about" onClick={onClick} className="hover:opacity-80">О компании</Link>
-            <Link href="/letters" onClick={onClick} className="hover:opacity-80">Отзывы</Link>
-            <Link href="/contacts" onClick={onClick} className="hover:opacity-80">Контакты</Link>
+    const handleNavigate = (href: string) => {
+        setOpen(false);
+        router.push(href);
+    };
+
+    const Nav = ({mobile = false}: { mobile?: boolean }) => (
+        <nav
+            className={`flex ${
+                mobile
+                    ? "flex-col gap-6 text-lg"
+                    : "flex-row items-center gap-6 md:gap-10"
+            }`}
+        >
+            {[
+                {href: "/news", label: "Новости"},
+                {href: "/services", label: "Услуги"},
+                {href: "/solutions", label: "Наши решения"},
+                {href: "/experience", label: "Наш опыт"},
+                {href: "/about", label: "О компании"},
+                {href: "/letters", label: "Отзывы"},
+                {href: "/contacts", label: "Контакты"},
+            ].map((link) => (
+                <button
+                    key={link.href}
+                    onClick={() => handleNavigate(link.href)}
+                    className="text-left hover:opacity-80 transition"
+                >
+                    {link.label}
+                </button>
+            ))}
         </nav>
     );
 
@@ -26,7 +49,7 @@ export default function Header() {
             <div className="hidden md:block bg-gray-200 text-black">
                 <div
                     className="mx-auto max-w-[1400px] px-6 py-3 flex justify-between items-center text-[13px]
-                     whitespace-nowrap overflow-hidden text-ellipsis"
+           whitespace-nowrap overflow-hidden text-ellipsis"
                 >
                     {/* почта */}
                     <div className="flex items-center gap-2 shrink-0">
@@ -95,23 +118,26 @@ export default function Header() {
 
             {/* мобильное меню */}
             {open && (
-                <div className="md:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm">
-                    <div className="absolute right-0 top-0 h-full w-[82%] max-w-[360px] bg-gray-100 text-black p-6">
+                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
+                    <div className="h-full w-[82%] max-w-[360px] bg-gray-100 text-black p-6 shadow-xl flex flex-col">
                         <div className="flex items-center justify-between mb-6">
-                            <img src="/logo.svg" alt="PAS Group" width={140} height={45}/>
-                            <button aria-label="Закрыть меню" onClick={() => setOpen(false)}>
+                            <Image
+                                src="/logo.png"
+                                alt="PAS Group"
+                                width={140}
+                                height={45}
+                                className="h-10 w-auto"
+                            />
+                            <button
+                                aria-label="Закрыть меню"
+                                onClick={() => setOpen(false)}
+                            >
                                 <X/>
                             </button>
                         </div>
-                        <div className="space-y-6">
-                            <Nav onClick={() => setOpen(false)}/>
-                        </div>
+
+                        <Nav mobile/>
                     </div>
-                    <button
-                        className="absolute inset-0"
-                        onClick={() => setOpen(false)}
-                        aria-label="Закрыть"
-                    />
                 </div>
             )}
         </header>

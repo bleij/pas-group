@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 
 export default function Advantages() {
@@ -27,22 +28,23 @@ export default function Advantages() {
     ];
 
     return (
-        <section className="w-full bg-white py-16">
-            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <section className="w-full bg-white py-6 sm:py-8 md:py-16">
+            <div
+                className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center">
                 {/* Текстовая часть */}
                 <div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-8">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 md:mb-8">
                         Чем мы отличаемся?
                     </h2>
 
-                    <ul className="space-y-6">
+                    <ul className="space-y-3 sm:space-y-4 md:space-y-6">
                         {items.map((item) => (
-                            <li key={item.number} className="flex gap-4">
-                <span className="text-lg text-gray-400 font-regular min-w-[2rem]">
+                            <li key={item.number} className="flex gap-3 sm:gap-4">
+                <span className="text-sm sm:text-base text-gray-400 min-w-[1.8rem] sm:min-w-[2rem]">
                   {item.number}
                 </span>
-                                <p className="text-2xl">
-                                    <span className="font-medium">{item.title}: </span>
+                                <p className="text-sm sm:text-base md:text-lg leading-snug sm:leading-relaxed">
+                                    <span className="font-semibold">{item.title}: </span>
                                     {item.text}
                                 </p>
                             </li>
@@ -50,19 +52,27 @@ export default function Advantages() {
                     </ul>
 
                     {/* Кнопки */}
-                    <div className="mt-10 flex flex-wrap gap-6">
-                        <button className="px-6 py-3 bg-[#009999] text-white rounded-md hover:bg-[#007A7A] transition text-xl">
+                    <div className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap gap-4 sm:gap-6">
+                        <Link
+                            href="#presentations"
+                            className="px-4 sm:px-6 py-2 sm:py-3 bg-[#009999] text-white rounded-md hover:bg-[#007A7A] transition text-sm sm:text-base md:text-xl"
+                        >
                             Скачать презентации
-                        </button>
-                        <button className="px-6 py-3 border-b-2 border-black hover:border-gray-500 transition text-xl">
+                        </Link>
+
+                        <Link
+                            href="#certificates"
+                            className="px-4 sm:px-6 py-2 sm:py-3 border-b-2 border-black hover:border-gray-500 transition text-sm sm:text-base md:text-xl"
+                        >
                             Сертификаты
-                        </button>
+                        </Link>
                     </div>
                 </div>
 
                 {/* Правая картинка-заглушка */}
-                <div className="flex justify-end items-start">
-                    <div className="relative rounded-[24px] overflow-hidden w-full md:w-[500px] h-80 md:h-[520px]">
+                <div className="flex justify-end items-start mt-6 md:mt-0">
+                    <div
+                        className="relative rounded-[16px] md:rounded-[24px] overflow-hidden w-full sm:w-[400px] md:w-[500px] h-48 sm:h-64 md:h-[520px]">
                         <Image
                             src="/advantages.png"
                             alt="Чем мы отличаемся"

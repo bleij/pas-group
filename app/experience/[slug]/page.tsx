@@ -11,19 +11,49 @@ interface Params {
     slug: string;
 }
 
-export default async function CasePage({params}: { params: Promise<Params> }) {
-    const {slug} = await params;
-    const decodedSlug = decodeURIComponent(slug);
+interface CaseFields {
+    shortDescription?: string;
+    fullDescription?: string;
+}
 
-    const data = await wpRequest(GET_CASE_BY_SLUG, {slug: decodedSlug});
+interface CaseNode {
+    id: string;
+    slug: string;
+    title: string;
+    featuredImage?: {
+        node?: {
+            sourceUrl?: string;
+            altText?: string;
+        };
+    };
+    caseFields?: CaseFields;
+}
+
+interface CaseQueryResponse {
+    cases?: {
+        nodes?: CaseNode[];
+    };
+}
+
+export default async function CasePage({
+                                           params,
+                                       }: {
+    params: Params;
+}) {
+    const decodedSlug = decodeURIComponent(params.slug);
+
+    const data: CaseQueryResponse = await wpRequest(GET_CASE_BY_SLUG, {
+        slug: decodedSlug,
+    });
     const post = data?.cases?.nodes?.[0];
+
     if (!post) return notFound();
 
     const cover = post.featuredImage?.node?.sourceUrl || null;
     const coverAlt = post.featuredImage?.node?.altText || post.title;
 
-    const moreData = await wpRequest(GET_CASES, {first: 3});
-    const moreCases = moreData?.cases?.nodes || [];
+    const moreData: CaseQueryResponse = await wpRequest(GET_CASES, {first: 3});
+    const moreCases = moreData?.cases?.nodes ?? [];
 
     return (
         <>
@@ -33,9 +63,9 @@ export default async function CasePage({params}: { params: Promise<Params> }) {
                 {/* хлебные крошки */}
                 <nav className="text-sm text-gray-500 mb-5">
                     Главная <span className="mx-1">/</span>
-                    <a href="/experience" className="hover:underline">
+                    <Link href="/experience" className="hover:underline">
                         Наш опыт
-                    </a>
+                    </Link>
                     <span className="mx-1">/</span>
                     <span dangerouslySetInnerHTML={{__html: post.title}}/>
                 </nav>
@@ -101,7 +131,7 @@ export default async function CasePage({params}: { params: Promise<Params> }) {
 
                         {/* карточки */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {moreCases.map((p: any) => (
+                            {moreCases.map((p) => (
                                 <Link
                                     href={`/experience/${p.slug}`}
                                     key={p.id}

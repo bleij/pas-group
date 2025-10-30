@@ -123,11 +123,11 @@ export default function Footer() {
                     <div className="grid grid-cols-2 gap-8 text-[18px]">
                         <div className="flex flex-col gap-2">
                             <a href="/solutions" className="hover:underline">Наши решения</a>
-                            <a href="/#experience" className="hover:underline">Наш опыт</a>
+                            <a href="/experience" className="hover:underline">Наш опыт</a>
                             <a href="/letters" className="hover:underline">Отзывы</a>
                             <a href="/services" className="hover:underline">Услуги</a>
                             <a href="/news" className="hover:underline">Новости</a>
-                            <a href="/#about" className="hover:underline">О компании</a>
+                            <a href="/about" className="hover:underline">О компании</a>
                         </div>
                         <div className="flex flex-col gap-2">
                             <a href="https://www.instagram.com/power_and_automation/" target="_blank"

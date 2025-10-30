@@ -4,15 +4,16 @@ import {useEffect, useState, useCallback} from "react";
 import Image from "next/image";
 import {motion, AnimatePresence} from "framer-motion";
 import {Swiper, SwiperSlide} from "swiper/react";
+import type {Swiper as SwiperClass} from "swiper";
 import "swiper/css";
 import type {CertificateNode} from "@/lib/queries/certificates";
-import {ChevronLeft, ChevronRight, X} from "lucide-react";
+import {X} from "lucide-react";
 
 type Props = {
     items: CertificateNode[];
     title?: string;
     showMoreHref?: string;
-    greyBg?: boolean; // оставил на будущее, но не используем
+    greyBg?: boolean;
 };
 
 export default function CertificatesClient({
@@ -23,22 +24,31 @@ export default function CertificatesClient({
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
     return (
-        <section className="w-full py-16">{/* белый фон */}
-            <div className="max-w-7xl mx-auto px-6">
+        <section id="certificates" className="w-full py-8 sm:py-10 md:py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 {title && (
                     <>
-                        <h2 className="text-2xl md:text-3xl font-bold mb-4">{title}</h2>
-                        <div className="h-1 w-32 bg-[#009999] mb-8"/>
+                        <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 md:mb-4">
+                            {title}
+                        </h2>
+                        <div className="h-1 w-24 sm:w-32 bg-[#009999] mb-5 sm:mb-8"/>
                     </>
                 )}
 
-                {/* mobile: свайпер по одному */}
+                {/* mobile */}
                 <div className="md:hidden">
-                    <Swiper spaceBetween={16} slidesPerView={1.08}>
+                    <Swiper
+                        spaceBetween={8}
+                        slidesPerView={2}
+                        breakpoints={{
+                            640: {slidesPerView: 3, spaceBetween: 12},
+                            1024: {slidesPerView: 4, spaceBetween: 20},
+                        }}
+                    >
                         {items.map((c, i) => (
                             <SwiperSlide key={c.id}>
                                 <button
-                                    className="group rounded-xl overflow-hidden bg-white w-full"
+                                    className="cursor-pointer w-full"
                                     onClick={() => setActiveIndex(i)}
                                 >
                                     <Thumb item={c}/>
@@ -48,12 +58,12 @@ export default function CertificatesClient({
                     </Swiper>
                 </div>
 
-                {/* desktop: сетка 4 колонки */}
+                {/* desktop */}
                 <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
                     {items.map((c, i) => (
                         <button
                             key={c.id}
-                            className="group rounded-xl overflow-hidden bg-white"
+                            className="cursor-pointer bg-white"
                             onClick={() => setActiveIndex(i)}
                         >
                             <Thumb item={c}/>
@@ -62,10 +72,10 @@ export default function CertificatesClient({
                 </div>
 
                 {showMoreHref && (
-                    <div className="mt-10">
+                    <div className="mt-6 sm:mt-10 flex justify-start">
                         <a
                             href={showMoreHref}
-                            className="inline-block px-6 py-3 rounded-lg bg-gray-200 hover:bg-gray-300 transition font-medium text-xl text-[#374151]"
+                            className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-[#E5E7EB] rounded-md hover:bg-[#A5A7AA] transition font-medium text-sm sm:text-base text-[#374151]"
                         >
                             Посмотреть все
                         </a>
@@ -87,7 +97,7 @@ function Thumb({item}: { item: CertificateNode }) {
     const alt = item.featuredImage?.node?.altText || item.title || "";
 
     return (
-        <div className="relative w-full h-64 md:h-56 lg:h-56 bg-white">
+        <div className="relative w-full h-[200px] sm:h-[240px] md:h-[260px] bg-white">
             {src && (
                 <Image
                     src={src}
@@ -102,7 +112,7 @@ function Thumb({item}: { item: CertificateNode }) {
     );
 }
 
-/* -------- Lightbox with slide/swipe ---------- */
+/* -------- Lightbox ---------- */
 
 function Lightbox({
                       items,
@@ -115,9 +125,8 @@ function Lightbox({
 }) {
     const open = typeof index === "number" && index >= 0;
     const [current, setCurrent] = useState(index ?? 0);
-    const [swiper, setSwiper] = useState<any>(null);
+    const [swiper, setSwiper] = useState<SwiperClass | null>(null);
 
-    // sync when opening a different image
     useEffect(() => {
         if (typeof index === "number") {
             setCurrent(index);
@@ -125,7 +134,6 @@ function Lightbox({
         }
     }, [index, swiper]);
 
-    // lock body scroll
     useEffect(() => {
         if (!open) return;
         const prev = document.body.style.overflow;
@@ -155,7 +163,7 @@ function Lightbox({
     return (
         <AnimatePresence>
             <motion.div
-                className="fixed inset-0 z-50"
+                className="fixed inset-0 z-[999]"
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
                 exit={{opacity: 0}}
@@ -166,32 +174,13 @@ function Lightbox({
                     aria-hidden
                 />
                 <div className="relative z-10 h-full w-full flex items-center justify-center px-4">
-                    {/* Close button */}
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full bg-white/90 hover:bg-white"
-                        aria-label="Закрыть"
                     >
                         <X className="w-5 h-5"/>
                     </button>
 
-                    {/* Prev/Next — только на md+ */}
-                    <button
-                        onClick={() => swiper?.slidePrev()}
-                        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white"
-                        aria-label="Предыдущий"
-                    >
-                        <ChevronLeft className="w-6 h-6"/>
-                    </button>
-                    <button
-                        onClick={() => swiper?.slideNext()}
-                        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white"
-                        aria-label="Следующий"
-                    >
-                        <ChevronRight className="w-6 h-6"/>
-                    </button>
-
-                    {/* Swiper — даёт слайд-переход + свайпы на мобилке */}
                     <motion.div
                         className="relative w-full max-w-5xl h-[70vh] md:h-[80vh]"
                         initial={{scale: 0.98, opacity: 0}}

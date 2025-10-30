@@ -8,7 +8,7 @@ export default function ContactsPage() {
             <Header/>
 
             {/* Основной блок контактов */}
-            <section className="w-full py-20">
+            <section className="w-full py-12 md:py-20">
                 <div className="max-w-7xl mx-auto px-6">
                     <h1 className="text-[32px] md:text-[38px] font-bold mb-8">
                         Контакты

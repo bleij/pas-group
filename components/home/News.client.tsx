@@ -14,33 +14,36 @@ type NewsItem = {
 
 export default function NewsClient({posts}: { posts: NewsItem[] }) {
     return (
-        <section id="news" className="w-full bg-[#F3F4F6] py-16">
-            <div className="max-w-7xl mx-auto px-6">
+        <section id="news" className="w-full bg-[#F3F4F6] py-8 sm:py-10 md:py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 {/* заголовок */}
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">Новости</h2>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 md:mb-4">
+                    Новости
+                </h2>
                 {/* линия */}
-                <div className="h-1 w-32 bg-[#009999] mb-8"></div>
+                <div className="h-1 w-24 sm:w-32 bg-[#009999] mb-6 sm:mb-8"></div>
 
                 {/* сетка карточек */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                     {posts.map((post) => (
                         <Link
                             href={`/news/${post.slug}`}
                             key={post.id}
-                            className="group bg-white rounded-2xl p-4 flex flex-col transition-all"
+                            className="group bg-white rounded-xl p-3 sm:p-4 flex flex-col transition-all"
                         >
-                            <div className="relative w-full overflow-hidden rounded-lg mb-4">
+                            <div className="relative w-full overflow-hidden rounded-lg mb-3 sm:mb-4">
                                 {post.image && (
                                     <Image
                                         src={post.image}
                                         alt={post.title}
                                         width={400}
                                         height={250}
-                                        className="rounded-lg object-cover w-full h-48 group-hover:scale-105 transition-transform"
+                                        className="rounded-lg object-cover w-full h-44 sm:h-48 group-hover:scale-105 transition-transform"
+                                        style={{ objectPosition: "center 10%" }} // <-- сдвиг фокуса вверх
                                     />
                                 )}
                                 {/* стрелочка */}
-                                <div className="absolute top-3 right-3 bg-white rounded-md p-1.5">
+                                <div className="absolute top-2 right-2 bg-white rounded-md p-1.5 shadow-sm">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -54,14 +57,14 @@ export default function NewsClient({posts}: { posts: NewsItem[] }) {
                                 </div>
                             </div>
 
-                            <h3 className="font-semibold text-base mb-2 line-clamp-2">
+                            <h3 className="font-semibold text-sm sm:text-base mb-1 sm:mb-2 line-clamp-2">
                                 {post.title}
                             </h3>
-                            <p className="text-sm text-gray-500 mb-2">
+                            <p className="text-xs sm:text-sm text-gray-500 mb-1 sm:mb-2">
                                 {new Date(post.date).toLocaleDateString("ru-RU")}
                             </p>
                             {post.excerpt && (
-                                <p className="text-sm text-gray-600 line-clamp-3">
+                                <p className="text-xs sm:text-sm text-gray-600 line-clamp-3 leading-snug">
                                     {post.excerpt}
                                 </p>
                             )}
@@ -70,10 +73,10 @@ export default function NewsClient({posts}: { posts: NewsItem[] }) {
                 </div>
 
                 {/* кнопка */}
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-8 md:mt-10 flex justify-start">
                     <Link
                         href="/news"
-                        className="inline-block px-6 py-3 bg-[#E5E7EB] rounded-md hover:bg-[#A5A7AA] transition font-medium text-xl text-[#374151]"
+                        className="inline-block px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 bg-[#E5E7EB] rounded-md hover:bg-[#A5A7AA] transition font-medium text-sm sm:text-base md:text-xl text-[#374151]"
                     >
                         Все новости →
                     </Link>
