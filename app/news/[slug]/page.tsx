@@ -89,7 +89,7 @@ export default async function PostPage({
 
                 {/* заголовок */}
                 <h1
-                    className="text-3xl md:text-4xl font-bold leading-tight mb-3"
+                    className="text-xl md:text-4xl font-bold leading-tight mb-3"
                     dangerouslySetInnerHTML={{__html: post.title}}
                 />
 
@@ -103,7 +103,23 @@ export default async function PostPage({
                 </div>
 
                 {/* картинка */}
-                {cover && <ResponsiveNewsImage src={cover} alt={coverAlt}/>}
+                {cover && (
+                    <div
+                        className="mb-12 w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gray-100"
+                        style={{ maxHeight: "70vh" }}
+                    >
+                        <div className="relative w-full h-full flex items-center justify-center">
+                            <Image
+                                src={cover}
+                                alt={coverAlt}
+                                width={1400}
+                                height={700}
+                                className="w-auto max-h-[70vh] rounded-2xl object-contain md:object-contain sm:object-cover"
+                                priority
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* контент + подписка */}
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10 mb-12">

@@ -167,14 +167,14 @@ export default function HeroLanding({
                         <div className="mt-8 flex flex-wrap gap-4 text-lg">
                             <Link
                                 href="/contacts"
-                                className="rounded-[12px] px-6 py-3 bg-[#009999] text-white font-medium hover:bg-[#007A7A] transition"
+                                className="rounded-[12px] px-6 py-3 bg-[#009999] text-white font-medium hover:bg-[#007A7A] transition whitespace-nowrap"
                             >
                                 {primaryText}
                             </Link>
 
                             <Link
                                 href="/contacts"
-                                className="rounded-[12px] px-6 py-3 bg-[#E5E7EB] text-[#374151] font-medium hover:bg-[#A5A7AA] transition"
+                                className="rounded-[12px] px-6 py-3 bg-[#E5E7EB] text-[#374151] font-medium hover:bg-[#A5A7AA] transition whitespace-nowrap"
                             >
                                 {secondaryText}
                             </Link>

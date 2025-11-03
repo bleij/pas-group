@@ -10,14 +10,14 @@ export default function ResponsiveNewsImage({
     src: string;
     alt?: string;
 }) {
-    const [isVertical, setIsVertical] = useState(false);
+    const [orientation, setOrientation] = useState<"landscape" | "portrait" | "square">("landscape");
 
     return (
         <div
             className={`mb-12 w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gray-100 ${
-                isVertical ? "aspect-[3/4]" : "aspect-video"
+                orientation === "portrait" ? "aspect-[3/4]" : "aspect-video"
             }`}
-            style={{maxHeight: isVertical ? "65vh" : "50vh"}}
+            style={{maxHeight: orientation === "portrait" ? "85vh" : "70vh"}}
         >
             <div className="relative w-full h-full flex items-center justify-center">
                 <Image
@@ -26,13 +26,18 @@ export default function ResponsiveNewsImage({
                     width={1400}
                     height={700}
                     className={`rounded-2xl ${
-                        isVertical
+                        orientation === "portrait"
                             ? "object-cover object-top h-full w-auto"
-                            : "object-contain w-auto max-h-[70vh]"
+                            : orientation === "square"
+                                ? "object-cover object-[center_35%] h-full w-auto"
+                                : "object-contain w-auto max-h-[70vh]"
                     }`}
                     priority
                     onLoadingComplete={(img) => {
-                        if (img.naturalHeight > img.naturalWidth) setIsVertical(true);
+                        const {naturalWidth: w, naturalHeight: h} = img;
+                        if (h > w * 1.1) setOrientation("portrait");
+                        else if (Math.abs(h - w) / w < 0.1) setOrientation("square");
+                        else setOrientation("landscape");
                     }}
                 />
             </div>

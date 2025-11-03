@@ -49,7 +49,7 @@ export default async function SolutionsPage() {
                     Главная <span className="mx-1">/</span> Решения
                 </nav>
 
-                <h1 className="text-3xl md:text-3xl font-bold mb-10">Отраслевые решения</h1>
+                <h1 className="text-2xl md:text-3xl font-bold mb-10">Отраслевые решения</h1>
 
                 <SolutionsIndexClient posts={posts}/>
             </main>

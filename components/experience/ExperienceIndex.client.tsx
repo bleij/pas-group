@@ -83,7 +83,7 @@ function SafeImage({src, alt}: { src?: string; alt?: string }) {
 function Card({ post }: { post: CardPost }) {
     return (
         <Link
-            href={`/solutions/${post.slug}`}
+            href={`/experience/${post.slug}`}
             className="group flex flex-row items-stretch rounded-2xl bg-gray-50
                  hover:bg-gray-100 transition overflow-hidden"
         >

@@ -39,14 +39,25 @@ export default function PresentationsClient({
                             className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition group"
                         >
                             {p.cover && (
-                                <div className="w-full h-44 sm:h-52 md:h-60 relative">
+                                <div className="relative w-full h-56 sm:h-64 md:h-72 rounded-xl overflow-hidden">
+                                    {/* размытый фон */}
                                     <Image
                                         src={p.cover}
-                                        alt={p.alt || p.title}
+                                        alt=""
                                         fill
-                                        sizes="(max-width:768px) 100vw, 33vw"
-                                        className="object-cover object-top"
+                                        className="object-cover blur-xl scale-110 opacity-70"
                                     />
+
+                                    {/* основное изображение поверх */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <Image
+                                            src={p.cover}
+                                            alt={p.alt || p.title}
+                                            width={800}
+                                            height={600}
+                                            className="object-contain w-full h-full relative z-10"
+                                        />
+                                    </div>
                                 </div>
                             )}
 
