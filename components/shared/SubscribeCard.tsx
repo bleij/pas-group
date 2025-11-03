@@ -1,6 +1,40 @@
 "use client";
 
+import {useState} from "react";
+
 export default function SubscribeCard() {
+    const [email, setEmail] = useState("");
+    const [sent, setSent] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!email) return;
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL}/graphql`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                query: `
+          mutation AddSubscriber($email: String!) {
+            addSubscriber(input: { email: $email }) {
+              success
+            }
+          }
+        `,
+                variables: {email},
+            }),
+        });
+
+        const data = await res.json();
+        if (data?.data?.addSubscriber?.success) {
+            setSent(true);
+            setEmail("");
+            setTimeout(() => setSent(false), 4000);
+        } else {
+            alert("Ошибка при подписке. Попробуйте позже.");
+        }
+    }
+
     return (
         <aside className="rounded-2xl bg-[#009999] p-6 text-white">
             <h3 className="text-xl md:text-2xl font-medium leading-snug mb-5">
@@ -8,20 +42,21 @@ export default function SubscribeCard() {
             </h3>
 
             <form
-                className="flex items-stretch bg-transparent rounded-2xl overflow-hidden border border-white/70 focus-within:border-white transition">
+                onSubmit={handleSubmit}
+                className="flex items-stretch bg-transparent rounded-2xl overflow-hidden border border-white/70 focus-within:border-white transition"
+            >
                 <input
                     type="email"
                     placeholder="Ваш Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="flex-1 px-5 py-3 text-white bg-transparent placeholder:text-white/80 outline-none"
+                    required
                 />
                 <button
                     type="submit"
-                    aria-label="Подписаться"
                     className="bg-white flex items-center justify-center rounded-xl"
-                    style={{
-                        width: "3.2rem", // делает кнопку квадратной (примерно 51px)
-                        aspectRatio: "1 / 1",
-                    }}
+                    style={{width: "3.2rem", aspectRatio: "1 / 1"}}
                 >
                     <svg
                         width="21"
@@ -44,6 +79,12 @@ export default function SubscribeCard() {
           обработку персональных данных
         </span>
             </p>
+
+            {sent && (
+                <div className="mt-3 text-sm bg-white/20 py-2 px-3 rounded-lg">
+                    ✅ Спасибо! Вы подписаны.
+                </div>
+            )}
         </aside>
     );
 }

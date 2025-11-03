@@ -80,25 +80,28 @@ function Card({post}: { post: CardPost }) {
     return (
         <Link
             href={`/solutions/${post.slug}`}
-            className="group flex flex-row items-stretch rounded-2xl bg-gray-50 hover:bg-gray-100 transition overflow-hidden"
+            className="group flex flex-row items-stretch rounded-2xl bg-gray-50
+                 hover:bg-gray-100 transition overflow-hidden"
         >
             {/* текстовая часть */}
-            <div className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1">
-                <h3 className="text-lg md:text-2xl font-bold leading-snug text-gray-900">
+            <div
+                className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1 h-[180px] md:h-[240px] overflow-hidden"
+            >
+                <h3 className="text-sm md:text-2xl font-bold leading-snug text-gray-900 line-clamp-3">
                     {post.title}
                 </h3>
 
                 {!!post.excerpt && (
-                    <p className="text-sm md:text-base text-gray-700 line-clamp-3">
+                    <p className="text-sm md:text-base text-gray-700 line-clamp-3 leading-snug">
                         {post.excerpt}
                     </p>
                 )}
             </div>
 
-            {/* картинка справа */}
+            {/* картинка справа — стиль как у новостей */}
             <div
-                className="relative w-[45%] sm:w-[40%] md:w-[430px]
-          h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
+                className="relative w-[50%] sm:w-[40%] md:w-[430px]
+                   h-[180px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
             >
                 <SafeImage src={post.image} alt={post.alt || post.title}/>
             </div>

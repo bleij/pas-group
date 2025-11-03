@@ -29,7 +29,7 @@ export default async function ExperiencePage() {
         <main className="flex min-h-screen flex-col">
             <Header/>
 
-            <section className="w-full bg-white py-10 md:py-14">
+            <section className="w-full bg-white py-10 md:py-12">
                 <div className="max-w-7xl mx-auto px-6">
                     {/* хлебные крошки */}
                     <div className="text-sm text-gray-500 mb-5">

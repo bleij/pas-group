@@ -1,6 +1,6 @@
 export const GET_LETTERS = `
   query GetLetters {
-    letters {
+    letters(first: 50) {
       nodes {
         id
         title

@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import {wpRequest} from "@/lib/wp-client";
 import {GET_POST_BY_SLUG, GET_NEWS} from "@/lib/queries/news";
 import SubscribeCard from "@/components/shared/SubscribeCard";
+import ResponsiveNewsImage from "@/components/news/ResponsiveNewsImage";
 
 interface Params {
     slug: string;
@@ -102,23 +103,7 @@ export default async function PostPage({
                 </div>
 
                 {/* картинка */}
-                {cover && (
-                    <div
-                        className="mb-12 w-full flex items-center justify-center rounded-2xl overflow-hidden bg-gray-100"
-                        style={{aspectRatio: "16/9", maxHeight: "70vh"}}
-                    >
-                        <div className="relative w-full h-full flex items-center justify-center">
-                            <Image
-                                src={cover}
-                                alt={coverAlt}
-                                width={1400}
-                                height={700}
-                                className="max-h-[70vh] w-auto object-contain rounded-2xl"
-                                priority
-                            />
-                        </div>
-                    </div>
-                )}
+                {cover && <ResponsiveNewsImage src={cover} alt={coverAlt}/>}
 
                 {/* контент + подписка */}
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10 mb-12">

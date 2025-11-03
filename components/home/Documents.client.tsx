@@ -1,16 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import {useState, useEffect} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import {X} from "lucide-react";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Navigation, Keyboard} from "swiper/modules";
 import "swiper/css";
-import { motion, AnimatePresence } from "framer-motion";
-import type { DocumentNode } from "@/lib/queries/documents";
+import "swiper/css/navigation";
+import {motion, AnimatePresence} from "framer-motion";
+import type {DocumentNode} from "@/lib/queries/documents";
 
-export default function DocumentsClient({ items }: { items: DocumentNode[] }) {
-    const [active, setActive] = useState<DocumentNode | null>(null);
+export default function DocumentsClient({items}: { items: DocumentNode[] }) {
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+    // обработка клавиш Esc
+    useEffect(() => {
+        function handleKey(e: KeyboardEvent) {
+            if (activeIndex === null) return;
+            if (e.key === "Escape") setActiveIndex(null);
+        }
+
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [activeIndex]);
 
     return (
         <section id="documents" className="w-full bg-[#F2F2F2] py-6 sm:py-10 md:py-16">
@@ -25,37 +38,33 @@ export default function DocumentsClient({ items }: { items: DocumentNode[] }) {
                     </div>
                 </div>
 
-                {/* слайдер */}
+                {/* превью-слайдер */}
                 <Swiper
                     slidesPerView="auto"
                     spaceBetween={8}
                     breakpoints={{
-                        640: { slidesPerView: 2.2, spaceBetween: 12 },
-                        1024: { slidesPerView: 4, spaceBetween: 20 },
+                        640: {slidesPerView: 2.2, spaceBetween: 12},
+                        1024: {slidesPerView: 4, spaceBetween: 20},
                     }}
-                    className="!overflow-hidden !w-full relative z-0"
-                    style={{ paddingRight: "1rem" }}
+                    className="!overflow-hidden !w-full"
+                    style={{paddingRight: "1rem"}}
                 >
-                    {items.map((doc) => {
+                    {items.map((doc, i) => {
                         const src = doc.featuredImage?.node?.sourceUrl;
                         if (!src) return null;
                         return (
                             <SwiperSlide
                                 key={doc.id}
                                 className="!w-[45%] sm:!w-[30%] md:!w-[22%] flex items-center justify-center"
+                                onClick={() => setActiveIndex(i)}
                             >
-                                <div
-                                    className="cursor-pointer z-10 relative"
-                                    onClick={() => setActive(doc)}
-                                >
-                                    <Image
-                                        src={src}
-                                        alt={doc.featuredImage?.node?.altText || doc.title}
-                                        width={300}
-                                        height={400}
-                                        className="object-contain w-full h-auto pointer-events-auto"
-                                    />
-                                </div>
+                                <Image
+                                    src={src}
+                                    alt={doc.featuredImage?.node?.altText || doc.title}
+                                    width={300}
+                                    height={400}
+                                    className="object-contain w-full h-auto transition-transform duration-200 hover:scale-[1.02]"
+                                />
                             </SwiperSlide>
                         );
                     })}
@@ -74,38 +83,54 @@ export default function DocumentsClient({ items }: { items: DocumentNode[] }) {
 
             {/* модалка */}
             <AnimatePresence>
-                {active && (
+                {activeIndex !== null && (
                     <motion.div
-                        className="fixed inset-0 bg-black/70 flex items-center justify-center z-[999]"
-                        onClick={() => setActive(null)}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/80 flex items-center justify-center z-[999]"
+                        onClick={() => setActiveIndex(null)}
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0}}
                     >
                         <motion.div
                             className="bg-white rounded-xl p-4 max-w-5xl w-full relative shadow-lg"
                             onClick={(e) => e.stopPropagation()}
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
+                            initial={{scale: 0.95, opacity: 0}}
+                            animate={{scale: 1, opacity: 1}}
+                            exit={{scale: 0.95, opacity: 0}}
+                            transition={{duration: 0.2}}
                         >
                             <button
-                                onClick={() => setActive(null)}
+                                onClick={() => setActiveIndex(null)}
                                 className="absolute top-3 right-3 p-2 text-gray-500 hover:text-gray-800"
                             >
-                                <X size={24} />
+                                <X size={24}/>
                             </button>
 
-                            {active.featuredImage?.node?.sourceUrl && (
-                                <Image
-                                    src={active.featuredImage.node.sourceUrl}
-                                    alt={active.featuredImage.node.altText || active.title}
-                                    width={1200}
-                                    height={1600}
-                                    className="w-full mx-auto object-contain max-h-[80vh]"
-                                />
-                            )}
+                            {/* swiper внутри модалки */}
+                            <Swiper
+                                modules={[Navigation, Keyboard]}
+                                navigation
+                                keyboard={{enabled: true}}
+                                initialSlide={activeIndex}
+                                onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+                                className="w-full"
+                            >
+                                {items.map((doc) => {
+                                    const src = doc.featuredImage?.node?.sourceUrl;
+                                    if (!src) return null;
+                                    return (
+                                        <SwiperSlide key={doc.id}>
+                                            <Image
+                                                src={src}
+                                                alt={doc.featuredImage?.node?.altText || doc.title}
+                                                width={1200}
+                                                height={1600}
+                                                className="w-full mx-auto object-contain max-h-[80vh]"
+                                            />
+                                        </SwiperSlide>
+                                    );
+                                })}
+                            </Swiper>
                         </motion.div>
                     </motion.div>
                 )}

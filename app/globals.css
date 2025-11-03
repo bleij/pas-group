@@ -25,3 +25,38 @@ html {
 .clip-diagonal {
     clip-path: polygon(0 0, 65% 0, 55% 100%, 0 100%);
 }
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* --- Swiper arrows --- */
+.swiper-button-prev,
+.swiper-button-next {
+    color: #009999 !important; /* фирменный цвет */
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+    opacity: 1;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+    font-size: 28px !important;
+}
+
+.swiper-button-prev {
+    left: -8px !important;
+}
+
+.swiper-button-next {
+    right: -8px !important;
+}

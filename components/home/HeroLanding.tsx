@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
     bg?: string;
@@ -41,7 +42,7 @@ type Props = {
 export default function HeroLanding({
                                         bg = "/hero-bg.png",
                                         title = "Энергетика и автоматизация «под ключ»",
-                                        description = "Поставка, сборка и монтаж трансформаторных подстанций...",
+                                        description = "Поставка, сборка и монтаж трансформаторных подстанций, распределительных устройств и систем электроснабжения. Команда с 29+ годами экспертизы. 12+ лет без инцидентов эксплуатации.",
                                         primaryText = "Получить консультацию",
                                         secondaryText = "Получить КП",
 
@@ -50,13 +51,13 @@ export default function HeroLanding({
 
                                         overlayDesktopColor = "#215491",
                                         overlayDesktopOpacity = 0.3,
-                                        overlayDesktopBlur = "2px",
+                                        overlayDesktopBlur = "4px",
                                         overlayDesktopClip = "polygon(-14% 0, 48% 0, 74% 100%, 10% 100%)",
                                         overlayDesktopWidth = "86%",
 
                                         overlayMobileColor = "#215491",
                                         overlayMobileOpacity = 0.3,
-                                        overlayMobileBlur = "2px",
+                                        overlayMobileBlur = "4px",
                                         overlayMobileClip = "polygon(0 0, 75% 0, 100% 100%, 0 100%)",
                                         overlayMobileWidth = "100%",
 
@@ -130,7 +131,7 @@ export default function HeroLanding({
             {/* контент */}
             <div className="absolute inset-0 z-10">
                 <div className="h-full max-w-[1240px] mx-auto px-6 md:px-0 flex items-center">
-                    <div className="text-white max-w-[520px]">
+                    <div className="text-white max-w-[520px] mr-20">
                         <h1
                             className="leading-[1.12]"
                             style={{
@@ -164,15 +165,19 @@ export default function HeroLanding({
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-4 text-lg">
-                            <button
-                                className="rounded-[12px] px-6 py-3 bg-[#009999] text-white font-medium hover:bg-[#007A7A] transition">
+                            <Link
+                                href="/contacts"
+                                className="rounded-[12px] px-6 py-3 bg-[#009999] text-white font-medium hover:bg-[#007A7A] transition"
+                            >
                                 {primaryText}
-                            </button>
+                            </Link>
 
-                            <button
-                                className="rounded-[12px] px-6 py-3 bg-[#E5E7EB] text-[#374151] font-medium hover:bg-[#A5A7AA] transition">
+                            <Link
+                                href="/contacts"
+                                className="rounded-[12px] px-6 py-3 bg-[#E5E7EB] text-[#374151] font-medium hover:bg-[#A5A7AA] transition"
+                            >
                                 {secondaryText}
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

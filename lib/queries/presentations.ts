@@ -1,5 +1,5 @@
 export const GET_PRESENTATIONS = `
-  query GetPresentations($first: Int = 10) {
+  query GetPresentations($first: Int = 20) {
     presentations(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
       nodes {
         id

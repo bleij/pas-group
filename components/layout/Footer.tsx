@@ -8,7 +8,7 @@ export default function Footer() {
     return (
         <footer className="w-full bg-white relative">
             {/* ===== MOBILE (<= md) ===== */}
-            <div className="md:hidden px-4 py-10">
+            <div className="md:hidden pt-10">
                 <div className="bg-[#F2F2F2] rounded-[24px] p-6">
                     <Image
                         src="/logo.png"
@@ -61,8 +61,20 @@ export default function Footer() {
                             ["linkedin", "https://www.linkedin.com/in/alexandr-pauk-7b225138/"],
                             ["tiktok", "https://www.tiktok.com/@power_and_automation"],
                         ].map(([name, link]) => (
-                            <a key={name} href={link} target="_blank" aria-label={name}>
-                                <Image src={`/${name}.svg`} alt={name} width={40} height={40}/>
+                            <a
+                                key={name}
+                                href={link}
+                                target="_blank"
+                                aria-label={name}
+                                className="block w-10 h-10"
+                            >
+                                <Image
+                                    src={`/${name}.svg`}
+                                    alt={name}
+                                    width={40}
+                                    height={40}
+                                    className="w-10 h-10 object-contain"
+                                />
                             </a>
                         ))}
                     </div>

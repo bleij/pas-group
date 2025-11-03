@@ -67,7 +67,7 @@ export default function SolutionsClient({ solutions }: { solutions: SolutionNode
                 <div className="mt-6 sm:mt-10">
                     <Link
                         href="/solutions"
-                        className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 bg-[#E5E7EB] text-[#374151] rounded-md hover:bg-[#A5A7AA] transition text-sm sm:text-md font-medium"
+                        className="inline-block px-5 sm:px-6 py-2.5 sm:py-3 bg-[#E5E7EB] text-[#374151] rounded-md hover:bg-[#A5A7AA] transition text-md sm:text-md font-medium"
                     >
                         Все решения
                     </Link>

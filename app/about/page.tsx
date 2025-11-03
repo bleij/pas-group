@@ -38,6 +38,7 @@ export default async function AboutPage() {
                 // text
                 descSize="24px"
                 descWeight="400"
+                descSizeMobile="16"
             />
 
             {/* контентные блоки */}

@@ -224,39 +224,34 @@ function Card({post}: { post: CardPost }) {
                  hover:bg-gray-100 transition overflow-hidden"
         >
             {/* текстовая часть */}
-            <div className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1">
+            <div
+                className="flex flex-col justify-center gap-3 p-5 md:p-6 flex-1 h-[180px] md:h-[240px] overflow-hidden">
                 {post.categories?.length ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-full">
                         {post.categories.map((cat) => (
                             <span
                                 key={cat}
-                                className="inline-block bg-gray-200 text-gray-800 text-xs font-medium
-                           px-3 py-1 rounded-full group-hover:bg-[#009999]
-                           group-hover:text-white transition"
+                                className="flex-shrink-0 bg-gray-200 text-gray-800 text-xs font-medium
+                   px-3 py-1 rounded-full whitespace-nowrap
+                   group-hover:bg-[#009999] group-hover:text-white transition"
                             >
-                {cat}
-              </span>
+        {cat}
+      </span>
                         ))}
                     </div>
                 ) : null}
 
-                <h3 className="text-lg md:text-2xl font-bold leading-snug text-gray-900">
+                <h3 className="text-sm md:text-2xl font-bold leading-snug text-gray-900 line-clamp-3">
                     {post.title}
                 </h3>
 
-                {!!post.excerpt && (
-                    <p className="text-sm md:text-base text-gray-700 line-clamp-3">
-                        {post.excerpt}
-                    </p>
-                )}
-
-                <span className="text-xs text-gray-500 mt-2">{post.date}</span>
+                <span className="text-xs text-gray-500 mt-auto">{post.date}</span>
             </div>
 
             {/* картинка справа — даже на мобилке */}
             <div
-                className="relative w-[45%] sm:w-[40%] md:w-[430px]
-                   h-[160px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
+                className="relative w-[50%] sm:w-[40%] md:w-[430px]
+                   h-[180px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
             >
                 <SafeImage src={post.image} alt={post.alt || post.title}/>
             </div>

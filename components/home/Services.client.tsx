@@ -3,6 +3,7 @@
 import {useRef} from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {usePathname} from "next/navigation";
 import {ChevronLeft, ChevronRight} from "lucide-react";
 import type {ServiceNode} from "@/lib/queries/services";
 
@@ -19,6 +20,7 @@ export default function ServicesClient({
     limitGroups?: number;
 }) {
     const visibleGroups = limitGroups ? groups.slice(0, limitGroups) : groups;
+    const pathname = usePathname(); // <-- добавили
 
     return (
         <section id="services" className="w-full bg-white py-6 sm:py-8 md:py-16">
@@ -27,14 +29,17 @@ export default function ServicesClient({
                     <ServiceRow key={idx} title={g.title} items={g.items}/>
                 ))}
 
-                <div className="text-start mt-6 sm:mt-10">
-                    <Link
-                        href="/services"
-                        className="inline-block px-6 py-3 bg-[#E5E7EB] text-[#374151] rounded-md hover:bg-[#A5A7AA] transition text-md font-medium"
-                    >
-                        Смотреть все услуги
-                    </Link>
-                </div>
+                {/* показываем кнопку только если мы НЕ на странице /services */}
+                {pathname !== "/services" && (
+                    <div className="text-start mt-6 sm:mt-10">
+                        <Link
+                            href="/services"
+                            className="inline-block px-6 py-3 bg-[#E5E7EB] text-[#374151] rounded-md hover:bg-[#A5A7AA] transition text-md font-medium"
+                        >
+                            Смотреть все услуги
+                        </Link>
+                    </div>
+                )}
             </div>
         </section>
     );

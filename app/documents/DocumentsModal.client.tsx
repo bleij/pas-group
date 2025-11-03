@@ -1,22 +1,28 @@
 "use client";
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Image from "next/image";
 import {motion, AnimatePresence} from "framer-motion";
-import {X, ChevronLeft, ChevronRight} from "lucide-react";
+import {X} from "lucide-react";
 import type {DocumentNode} from "@/lib/queries/documents";
+import {Swiper, SwiperSlide} from "swiper/react";
+import {Navigation, Keyboard} from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function DocumentsModal({documents}: { documents: DocumentNode[] }) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-    const prev = () => {
-        if (activeIndex === null) return;
-        setActiveIndex((i) => (i! - 1 + documents.length) % documents.length);
-    };
-    const next = () => {
-        if (activeIndex === null) return;
-        setActiveIndex((i) => (i! + 1) % documents.length);
-    };
+    // обработка клавиши Esc
+    useEffect(() => {
+        function handleKey(e: KeyboardEvent) {
+            if (activeIndex === null) return;
+            if (e.key === "Escape") setActiveIndex(null);
+        }
+
+        window.addEventListener("keydown", handleKey);
+        return () => window.removeEventListener("keydown", handleKey);
+    }, [activeIndex]);
 
     return (
         <>
@@ -45,7 +51,7 @@ export default function DocumentsModal({documents}: { documents: DocumentNode[] 
 
             {/* модалка */}
             <AnimatePresence>
-                {activeIndex !== null && documents[activeIndex] && (
+                {activeIndex !== null && (
                     <motion.div
                         className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
                         onClick={() => setActiveIndex(null)}
@@ -54,46 +60,45 @@ export default function DocumentsModal({documents}: { documents: DocumentNode[] 
                         exit={{opacity: 0}}
                     >
                         <motion.div
-                            className="relative p-0 max-w-5xl w-full flex justify-center items-center"
+                            className="bg-white rounded-xl p-4 max-w-2xl w-full relative shadow-lg"
                             onClick={(e) => e.stopPropagation()}
-                            initial={{scale: 0.96, opacity: 0}}
+                            initial={{scale: 0.95, opacity: 0}}
                             animate={{scale: 1, opacity: 1}}
-                            exit={{scale: 0.96, opacity: 0}}
-                            transition={{duration: 0.18}}
+                            exit={{scale: 0.95, opacity: 0}}
+                            transition={{duration: 0.2}}
                         >
                             <button
                                 onClick={() => setActiveIndex(null)}
-                                className="absolute top-4 right-4 p-2 rounded-full bg-white/90 text-gray-800 hover:bg-white hover:shadow-md transition"
+                                className="absolute top-3 right-3 p-2 text-gray-500 hover:text-gray-800"
                             >
-                                <X size={20}/>
+                                <X size={24}/>
                             </button>
 
-                            <button
-                                onClick={prev}
-                                className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white"
+                            {/* swiper внутри модалки */}
+                            <Swiper
+                                modules={[Navigation, Keyboard]}
+                                navigation
+                                keyboard={{enabled: true}}
+                                initialSlide={activeIndex}
+                                onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+                                className="w-full"
                             >
-                                <ChevronLeft className="w-6 h-6"/>
-                            </button>
-
-                            <button
-                                onClick={next}
-                                className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/90 hover:bg-white"
-                            >
-                                <ChevronRight className="w-6 h-6"/>
-                            </button>
-
-                            <Image
-                                src={documents[activeIndex].featuredImage?.node?.sourceUrl || ""}
-                                alt={
-                                    documents[activeIndex].featuredImage?.node?.altText ||
-                                    documents[activeIndex].title
-                                }
-                                width={1200}
-                                height={1600}
-                                className="object-contain w-full max-h-[80vh] mx-auto"
-                                sizes="90vw"
-                                priority
-                            />
+                                {documents.map((doc) => {
+                                    const src = doc.featuredImage?.node?.sourceUrl;
+                                    if (!src) return null;
+                                    return (
+                                        <SwiperSlide key={doc.id}>
+                                            <Image
+                                                src={src}
+                                                alt={doc.featuredImage?.node?.altText || doc.title}
+                                                width={1200}
+                                                height={1600}
+                                                className="w-full mx-auto object-contain max-h-[80vh]"
+                                            />
+                                        </SwiperSlide>
+                                    );
+                                })}
+                            </Swiper>
                         </motion.div>
                     </motion.div>
                 )}
