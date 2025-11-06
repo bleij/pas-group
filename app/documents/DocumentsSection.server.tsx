@@ -15,9 +15,7 @@ export default async function DocumentsSection() {
     return (
         <section className="w-full py-16">
             <div className="max-w-7xl mx-auto px-6">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">Документация</h1>
-                <div className="h-1 w-16 bg-[#009999] mb-8"></div>
-
+                {/* 🔹 заголовок и линия теперь будут внутри DocumentsModal */}
                 <DocumentsModal documents={documents}/>
             </div>
         </section>

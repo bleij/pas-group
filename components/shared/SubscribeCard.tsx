@@ -1,10 +1,18 @@
 "use client";
 
-import {useState} from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export default function SubscribeCard() {
+    const [mounted, setMounted] = useState(false);
     const [email, setEmail] = useState("");
     const [sent, setSent] = useState(false);
+
+    useEffect(() => {
+        // Даем браузеру дорендериться, потом включаем анимацию
+        const t = setTimeout(() => setMounted(true), 100);
+        return () => clearTimeout(t);
+    }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -12,7 +20,7 @@ export default function SubscribeCard() {
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_WP_URL}/graphql`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 query: `
           mutation AddSubscriber($email: String!) {
@@ -21,7 +29,7 @@ export default function SubscribeCard() {
             }
           }
         `,
-                variables: {email},
+                variables: { email },
             }),
         });
 
@@ -35,10 +43,24 @@ export default function SubscribeCard() {
         }
     }
 
+    if (!mounted) {
+        // Пока не смонтировалось — без motion
+        return (
+            <aside className="rounded-2xl bg-[#009999] p-6 text-white opacity-0">
+                {/* просто placeholder */}
+            </aside>
+        );
+    }
+
     return (
-        <aside className="rounded-2xl bg-[#009999] p-6 text-white">
+        <motion.aside
+            className="rounded-2xl bg-[#009999] p-6 text-white"
+            initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+        >
             <h3 className="text-xl md:text-2xl font-medium leading-snug mb-5">
-                Будьте в курсе наших <br/> новостей и акций!
+                Будьте в курсе наших <br /> новостей и акций!
             </h3>
 
             <form
@@ -56,7 +78,7 @@ export default function SubscribeCard() {
                 <button
                     type="submit"
                     className="bg-white flex items-center justify-center rounded-xl"
-                    style={{width: "3.2rem", aspectRatio: "1 / 1"}}
+                    style={{ width: "3.2rem", aspectRatio: "1 / 1" }}
                 >
                     <svg
                         width="21"
@@ -76,15 +98,21 @@ export default function SubscribeCard() {
             <p className="text-xs mt-4 text-white/90 leading-relaxed">
                 Нажимая кнопку, вы даёте согласие на{" "}
                 <span className="underline decoration-white/70">
-          обработку персональных данных
-        </span>
+                    обработку персональных данных
+                </span>
             </p>
 
             {sent && (
-                <div className="mt-3 text-sm bg-white/20 py-2 px-3 rounded-lg">
+                <motion.div
+                    className="mt-3 text-sm bg-white/20 py-2 px-3 rounded-lg"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4 }}
+                >
                     ✅ Спасибо! Вы подписаны.
-                </div>
+                </motion.div>
             )}
-        </aside>
+        </motion.aside>
     );
 }

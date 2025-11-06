@@ -22,6 +22,12 @@ html {
     scroll-behavior: smooth;
 }
 
+html,
+body {
+    overflow-x: clip; /* вместо hidden */
+    overflow-y: visible; /* добавь это */
+}
+
 .clip-diagonal {
     clip-path: polygon(0 0, 65% 0, 55% 100%, 0 100%);
 }

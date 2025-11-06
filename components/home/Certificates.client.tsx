@@ -1,225 +1,263 @@
-"use client";
+"use client"
 
-import {useEffect, useState, useCallback} from "react";
-import Image from "next/image";
-import {motion, AnimatePresence} from "framer-motion";
-import {Swiper, SwiperSlide} from "swiper/react";
-import type {Swiper as SwiperClass} from "swiper";
-import "swiper/css";
-import type {CertificateNode} from "@/lib/queries/certificates";
-import {X} from "lucide-react";
+import { useEffect, useState, useCallback } from "react"
+import Image from "next/image"
+import { motion, AnimatePresence } from "framer-motion"
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Navigation, Keyboard } from "swiper/modules"
+import { X } from "lucide-react"
+import Link from "next/link"
+import "swiper/css"
+import "swiper/css/navigation"
+import type { Swiper as SwiperClass } from "swiper"
+import type { CertificateNode } from "@/lib/queries/certificates"
 
-type Props = {
-    items: CertificateNode[];
-    title?: string;
-    showMoreHref?: string;
-    greyBg?: boolean;
-};
+/* ---------- Универсальная анимация ---------- */
+const blurFade = {
+    hidden: { opacity: 0, filter: "blur(10px)" },
+    visible: {
+        opacity: 1,
+        filter: "blur(0px)",
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] },
+    },
+    exit: {
+        opacity: 0,
+        filter: "blur(10px)",
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] },
+    },
+}
 
-export default function CertificatesClient({
-                                               items,
-                                               title,
-                                               showMoreHref,
-                                           }: Props) {
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+export default function CertificatesClient({ items, title, showMoreHref }: { items: CertificateNode[]; title?: string; showMoreHref?: string }) {
+    const [activeIndex, setActiveIndex] = useState<number | null>(null)
+
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => e.key === "Escape" && setActiveIndex(null)
+        window.addEventListener("keydown", handleKey)
+        return () => window.removeEventListener("keydown", handleKey)
+    }, [])
 
     return (
         <section id="certificates" className="w-full py-8 sm:py-10 md:py-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <motion.div
+                variants={blurFade}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                className="max-w-7xl mx-auto px-4 sm:px-6"
+            >
+                {/* Заголовок */}
                 {title && (
-                    <>
-                        <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 md:mb-4">
+                    <motion.div variants={blurFade}>
+                        <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-5">
                             {title}
                         </h2>
-                        <div className="h-1 w-24 sm:w-32 bg-[#009999] mb-5 sm:mb-8"/>
-                    </>
+                        <motion.div
+                            className="h-1 w-24 sm:w-32 bg-[#009999] mb-5"
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            viewport={{ once: true }}
+                            style={{ originX: 0 }}
+                        />
+                    </motion.div>
                 )}
 
-                {/* mobile */}
-                <div className="md:hidden">
+                {/* Mobile */}
+                <motion.div variants={blurFade} className="md:hidden w-full overflow-hidden">
                     <Swiper
-                        spaceBetween={8}
-                        slidesPerView={2}
+                        slidesPerView={1.3}
+                        spaceBetween={10}
                         breakpoints={{
-                            640: {slidesPerView: 3, spaceBetween: 12},
-                            1024: {slidesPerView: 4, spaceBetween: 20},
+                            480: { slidesPerView: 1.8, spaceBetween: 12 },
+                            640: { slidesPerView: 2.5, spaceBetween: 14 },
+                            768: { slidesPerView: 3, spaceBetween: 16 },
                         }}
+                        className="w-full"
                     >
                         {items.map((c, i) => (
-                            <SwiperSlide key={c.id}>
-                                <button
-                                    className="cursor-pointer w-full"
+                            <SwiperSlide key={c.id} className="flex items-center justify-center">
+                                <motion.button
                                     onClick={() => setActiveIndex(i)}
+                                    className="cursor-pointer w-full"
+                                    whileHover={{
+                                        scale: 1.04,
+                                        boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
+                                        transition: { duration: 0.15 },
+                                    }}
+                                    whileTap={{ scale: 0.96 }}
                                 >
-                                    <Thumb item={c}/>
-                                </button>
+                                    <Thumb item={c} />
+                                </motion.button>
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                </div>
+                </motion.div>
 
-                {/* desktop */}
-                <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Desktop */}
+                <motion.div
+                    variants={blurFade}
+                    className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6"
+                >
                     {items.map((c, i) => (
-                        <button
+                        <motion.button
                             key={c.id}
-                            className="cursor-pointer bg-white"
                             onClick={() => setActiveIndex(i)}
+                            className="cursor-pointer bg-white"
+                            whileHover={{
+                                scale: 1.03,
+                                boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
+                                transition: { duration: 0.15 },
+                            }}
+                            whileTap={{ scale: 0.96 }}
                         >
-                            <Thumb item={c}/>
-                        </button>
+                            <Thumb item={c} />
+                        </motion.button>
                     ))}
-                </div>
+                </motion.div>
 
+                {/* кнопка */}
                 {showMoreHref && (
-                    <div className="mt-6 sm:mt-10 flex justify-start">
-                        <a
-                            href={showMoreHref}
-                            className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-[#E5E7EB] rounded-md hover:bg-[#A5A7AA] transition font-medium text-sm sm:text-base text-[#374151]"
+                    <motion.div
+                        className="mt-6 sm:mt-10 flex justify-start"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
+                        viewport={{ once: true }}
+                    >
+                        <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 180, damping: 10 }}
                         >
-                            Посмотреть все
-                        </a>
-                    </div>
+                            <Link
+                                href={showMoreHref}
+                                className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-[#E5E7EB] rounded-md hover:bg-[#A5A7AA] transition font-medium text-sm sm:text-base text-[#374151]"
+                            >
+                                Посмотреть все
+                            </Link>
+                        </motion.div>
+                    </motion.div>
                 )}
-            </div>
+            </motion.div>
 
-            <Lightbox
-                items={items}
-                index={activeIndex}
-                onClose={() => setActiveIndex(null)}
-            />
+            <Lightbox items={items} index={activeIndex} onClose={() => setActiveIndex(null)} />
         </section>
-    );
+    )
 }
 
-function Thumb({item}: { item: CertificateNode }) {
-    const src = item.featuredImage?.node?.sourceUrl;
-    const alt = item.featuredImage?.node?.altText || item.title || "";
-
+/* ---------- Превью ---------- */
+function Thumb({ item }: { item: CertificateNode }) {
+    const src = item.featuredImage?.node?.sourceUrl
+    const alt = item.featuredImage?.node?.altText || item.title || ""
     return (
-        <div className="relative w-full h-[200px] sm:h-[240px] md:h-[260px] bg-white">
+        <div className="relative w-full h-[220px] sm:h-[260px] bg-white">
             {src && (
-                <Image
-                    src={src}
-                    alt={alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-contain"
-                    draggable={false}
-                />
+                <Image src={src} alt={alt} fill className="object-contain" sizes="(max-width: 768px) 100vw, 25vw" draggable={false} />
             )}
         </div>
-    );
+    )
 }
 
-/* -------- Lightbox ---------- */
-
-function Lightbox({
-                      items,
-                      index,
-                      onClose,
-                  }: {
-    items: CertificateNode[];
-    index: number | null;
-    onClose: () => void;
-}) {
-    const open = typeof index === "number" && index >= 0;
-    const [current, setCurrent] = useState(index ?? 0);
-    const [swiper, setSwiper] = useState<SwiperClass | null>(null);
+/* ---------- Модалка ---------- */
+function Lightbox({ items, index, onClose }: { items: CertificateNode[]; index: number | null; onClose: () => void }) {
+    const [swiper, setSwiper] = useState<SwiperClass | null>(null)
+    const isOpen = index !== null
 
     useEffect(() => {
-        if (typeof index === "number") {
-            setCurrent(index);
-            if (swiper) swiper.slideTo(index, 0);
-        }
-    }, [index, swiper]);
+        if (isOpen && typeof index === "number") swiper?.slideTo(index, 0)
+    }, [isOpen, index, swiper])
 
     useEffect(() => {
-        if (!open) return;
-        const prev = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.body.style.overflow = prev;
-        };
-    }, [open]);
+        document.body.style.overflow = isOpen ? "hidden" : ""
+    }, [isOpen])
 
-    const onKey = useCallback(
+    const handleKey = useCallback(
         (e: KeyboardEvent) => {
-            if (!open) return;
-            if (e.key === "Escape") onClose();
-            if (e.key === "ArrowLeft") swiper?.slidePrev();
-            if (e.key === "ArrowRight") swiper?.slideNext();
+            if (!isOpen) return
+            if (e.key === "Escape") onClose()
+            if (e.key === "ArrowLeft") swiper?.slidePrev()
+            if (e.key === "ArrowRight") swiper?.slideNext()
         },
-        [open, onClose, swiper]
-    );
+        [isOpen, swiper, onClose]
+    )
 
     useEffect(() => {
-        document.addEventListener("keydown", onKey);
-        return () => document.removeEventListener("keydown", onKey);
-    }, [onKey]);
-
-    if (!open) return null;
+        document.addEventListener("keydown", handleKey)
+        return () => document.removeEventListener("keydown", handleKey)
+    }, [handleKey])
 
     return (
         <AnimatePresence>
-            <motion.div
-                className="fixed inset-0 z-[999]"
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                exit={{opacity: 0}}
-            >
-                <div
-                    className="absolute inset-0 bg-black/80"
+            {isOpen && (
+                <motion.div
+                    key="overlay"
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={blurFade}
+                    className="fixed inset-0 flex items-center justify-center z-[9999] pointer-events-auto"
                     onClick={onClose}
-                    aria-hidden
-                />
-                <div className="relative z-10 h-full w-full flex items-center justify-center px-4">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-full bg-white/90 hover:bg-white"
-                    >
-                        <X className="w-5 h-5"/>
-                    </button>
-
+                    style={{
+                        backgroundColor: "rgba(0,0,0,0.8)",
+                        backdropFilter: "blur(4px)",
+                    }}
+                >
                     <motion.div
-                        className="relative w-full max-w-5xl h-[70vh] md:h-[80vh]"
-                        initial={{scale: 0.98, opacity: 0}}
-                        animate={{scale: 1, opacity: 1}}
-                        exit={{scale: 0.98, opacity: 0}}
-                        transition={{duration: 0.18}}
+                        key="modal"
+                        onClick={(e) => e.stopPropagation()}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        variants={blurFade}
+                        className="relative w-[92vw] max-w-[880px] rounded-xl bg-white shadow-xl overflow-hidden"
                     >
+                        <motion.button
+                            onClick={onClose}
+                            whileHover={{ rotate: 90, scale: 1.08 }}
+                            transition={{ duration: 0.25 }}
+                            className="absolute top-3 right-3 z-10 p-2 text-gray-500 hover:text-gray-800"
+                        >
+                            <X size={24} />
+                        </motion.button>
+
                         <Swiper
-                            onSwiper={setSwiper}
-                            initialSlide={current}
-                            onSlideChange={(s) => setCurrent(s.activeIndex)}
+                            modules={[Navigation, Keyboard]}
+                            navigation
+                            keyboard={{ enabled: true }}
+                            initialSlide={index ?? 0}
+                            slidesPerGroup={1}
                             slidesPerView={1}
                             spaceBetween={0}
-                            allowTouchMove
-                            className="w-full h-full"
+                            className="relative h-[60vh] md:h-[64vh]"
                         >
                             {items.map((c) => {
-                                const src = c.featuredImage?.node?.sourceUrl || "";
-                                const alt = c.featuredImage?.node?.altText || c.title || "";
+                                const src = c.featuredImage?.node?.sourceUrl || ""
+                                const alt = c.featuredImage?.node?.altText || c.title || ""
                                 return (
                                     <SwiperSlide key={c.id}>
-                                        <div className="relative w-full h-full">
+                                        <motion.div
+                                            initial="hidden"
+                                            animate="visible"
+                                            exit="exit"
+                                            variants={blurFade}
+                                            className="flex items-center justify-center h-full w-full p-6"
+                                        >
                                             <Image
                                                 src={src}
                                                 alt={alt}
                                                 fill
-                                                sizes="100vw"
                                                 className="object-contain select-none"
                                                 draggable={false}
                                                 priority
                                             />
-                                        </div>
+                                        </motion.div>
                                     </SwiperSlide>
-                                );
+                                )
                             })}
                         </Swiper>
                     </motion.div>
-                </div>
-            </motion.div>
+                </motion.div>
+            )}
         </AnimatePresence>
-    );
+    )
 }

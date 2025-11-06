@@ -1,6 +1,9 @@
+"use client";
+
 import Header from "@/components/layout/Header";
 import Contact from "@/components/home/Contact";
 import Footer from "@/components/layout/Footer";
+import {motion} from "framer-motion";
 
 export default function ContactsPage() {
     return (
@@ -8,13 +11,31 @@ export default function ContactsPage() {
             <Header/>
 
             {/* Основной блок контактов */}
-            <section className="w-full py-12 md:py-20">
+            <motion.section
+                className="w-full py-12 md:py-20"
+                initial={{opacity: 0, y: 40, filter: "blur(10px)"}}
+                whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                transition={{duration: 0.7, ease: "easeOut"}}
+                viewport={{once: true}}
+            >
                 <div className="max-w-7xl mx-auto px-6">
-                    <h1 className="text-[32px] md:text-[38px] font-bold mb-8">
+                    <motion.h1
+                        className="text-[32px] md:text-[38px] font-bold mb-8"
+                        initial={{opacity: 0, y: 25, filter: "blur(8px)"}}
+                        whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                        transition={{duration: 0.7, ease: "easeOut"}}
+                        viewport={{once: true}}
+                    >
                         Контакты
-                    </h1>
+                    </motion.h1>
 
-                    <div className="space-y-3 text-[16px] leading-relaxed">
+                    <motion.div
+                        className="space-y-3 text-[16px] leading-relaxed"
+                        initial={{opacity: 0, y: 30, filter: "blur(10px)"}}
+                        whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                        transition={{duration: 0.7, ease: "easeOut", delay: 0.2}}
+                        viewport={{once: true}}
+                    >
                         <p>
                             <strong>Адрес:</strong> Казахстан, г. Актау, 5&nbsp;
                             &quot;А&quot;&nbsp;мкр, БЦ «Каспий-Grand», офис&nbsp;10
@@ -53,10 +74,16 @@ export default function ContactsPage() {
                                 zakup@pasgroup.kz
                             </a>
                         </p>
-                    </div>
+                    </motion.div>
 
                     {/* Кнопки */}
-                    <div className="flex flex-wrap gap-4 mt-8">
+                    <motion.div
+                        className="flex flex-wrap gap-4 mt-8"
+                        initial={{opacity: 0, y: 20, filter: "blur(10px)"}}
+                        whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                        transition={{duration: 0.6, ease: "easeOut", delay: 0.3}}
+                        viewport={{once: true}}
+                    >
                         <a
                             href="https://go.2gis.com/lyrGi"
                             target="_blank"
@@ -74,9 +101,9 @@ export default function ContactsPage() {
                         >
                             Посмотреть в&nbsp;Яндекс&nbsp;картах
                         </a>
-                    </div>
+                    </motion.div>
                 </div>
-            </section>
+            </motion.section>
 
             {/* Форма и карта */}
             <Contact/>

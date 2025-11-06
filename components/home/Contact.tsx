@@ -1,13 +1,13 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
 import Image from "next/image";
-import {motion, AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Contact() {
-    const [form, setForm] = useState({name: "", phone: ""});
+    const [form, setForm] = useState({ name: "", phone: "" });
     const [modalOpen, setModalOpen] = useState(false);
-    const [extra, setExtra] = useState({service: "", email: ""});
+    const [extra, setExtra] = useState({ service: "", email: "" });
     const [pending, setPending] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -21,11 +21,11 @@ export default function Contact() {
         e.preventDefault();
         setPending(true);
 
-        const payload = {...form, ...extra};
+        const payload = { ...form, ...extra };
 
         const res = await fetch("/api/contact", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         });
 
@@ -33,39 +33,69 @@ export default function Contact() {
 
         if (res.ok) {
             setSuccess(true);
-            setForm({name: "", phone: ""});
-            setExtra({service: "", email: ""});
+            setForm({ name: "", phone: "" });
+            setExtra({ service: "", email: "" });
             setModalOpen(false);
-
             setTimeout(() => setSuccess(false), 4000);
         } else {
             alert("Ошибка при отправке, попробуйте позже.");
         }
     }
 
+    // 🔹 Анимация снизу с блюром
+    const blurUp = {
+        hidden: { opacity: 0, y: 60, filter: "blur(10px)" },
+        visible: {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] },
+        },
+    };
+
     return (
-        <section id="contact" className="w-full bg-white py-8 md:py-16">
+        <motion.section
+            id="contact"
+            className="w-full bg-white py-8 md:py-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.25 }}
+            variants={blurUp}
+        >
             <div className="max-w-7xl mx-auto px-4">
-                {/* Заголовок и форма */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 items-start">
-                    <div>
+                {/* 🔹 Заголовок и форма */}
+                <motion.div
+                    className="grid grid-cols-1 lg:grid-cols-2 items-start"
+                    variants={blurUp}
+                >
+                    <motion.div variants={blurUp}>
                         <h2 className="text-2xl md:text-3xl font-bold mb-4">
                             Бесплатная консультация от PAS
                         </h2>
-                        <div className="h-1 w-24 bg-[#009999] mb-6"></div>
+                        <motion.div
+                            className="h-1 w-24 bg-[#009999] mb-6 origin-left"
+                            initial={{ scaleX: 0, filter: "blur(8px)" }}
+                            whileInView={{ scaleX: 1, filter: "blur(0px)" }}
+                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                            viewport={{ once: true }}
+                        />
                         <p className="text-gray-700 mb-8 text-lg">
                             Оставьте заявку и получите подробную консультацию о наших услугах
                         </p>
-                    </div>
+                    </motion.div>
 
-                    <form onSubmit={handleBaseSubmit} className="flex flex-col gap-4">
+                    <motion.form
+                        onSubmit={handleBaseSubmit}
+                        className="flex flex-col gap-4"
+                        variants={blurUp}
+                    >
                         <div className="flex flex-col sm:flex-row gap-4">
                             <input
                                 type="text"
                                 placeholder="Ваше имя"
                                 value={form.name}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                    setForm({...form, name: e.target.value})
+                                onChange={(e) =>
+                                    setForm({ ...form, name: e.target.value })
                                 }
                                 className="flex-1 px-5 py-4 bg-gray-100 text-black text-lg rounded-xl focus:outline-none"
                                 required
@@ -76,7 +106,7 @@ export default function Contact() {
                                 pattern="[0-9]*"
                                 placeholder="Номер телефона"
                                 value={form.phone}
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                onChange={(e) =>
                                     setForm({
                                         ...form,
                                         phone: e.target.value.replace(/\D/g, ""),
@@ -104,11 +134,14 @@ export default function Contact() {
                                 </a>
                             </p>
                         </div>
-                    </form>
-                </div>
+                    </motion.form>
+                </motion.div>
 
-                {/* Карта */}
-                <div className="relative mt-14">
+                {/* 🔹 Карта */}
+                <motion.div
+                    variants={blurUp}
+                    className="relative mt-14"
+                >
                     <a
                         href="https://go.2gis.com/OFnSC"
                         target="_blank"
@@ -127,8 +160,10 @@ export default function Contact() {
                     </a>
 
                     {/* Карточка с контактами */}
-                    <div
-                        className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 bg-white p-10 rounded-2xl shadow-md w-[420px] h-[440px] hidden md:flex flex-col justify-center">
+                    <motion.div
+                        variants={blurUp}
+                        className="absolute left-6 md:left-10 top-1/2 -translate-y-1/2 bg-white p-10 rounded-2xl shadow-md w-[420px] h-[440px] hidden md:flex flex-col justify-center"
+                    >
                         <div>
                             <p className="mb-4 leading-loose">
                                 <span className="font-medium">Адрес:</span> Казахстан, г. Актау,
@@ -136,79 +171,48 @@ export default function Contact() {
                             </p>
                             <p className="mb-4 leading-loose">
                                 <span className="font-medium">Телефон:</span> +7 701 98 98 200
-                                <br/>+7 771 30 82 800
+                                <br />+7 771 30 82 800
                             </p>
                             <p className="leading-loose">
                                 <span className="font-medium">Email:</span> director@pasgroup.kz
-                                <br/>
+                                <br />
                                 zakup@pasgroup.kz
                             </p>
                         </div>
 
                         <div className="flex gap-4 mt-8 items-center">
                             {[
-                                {
-                                    href: "https://www.facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/",
-                                    src: "/facebook.svg",
-                                    alt: "facebook",
-                                },
-                                {
-                                    href: "https://www.instagram.com/power_and_automation/",
-                                    src: "/instagram.svg",
-                                    alt: "instagram",
-                                },
-                                {
-                                    href: "https://www.youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos",
-                                    src: "/youtube.svg",
-                                    alt: "youtube",
-                                },
-                                {
-                                    href: "https://www.linkedin.com/in/alexandr-pauk-7b225138/",
-                                    src: "/linkedin.svg",
-                                    alt: "linkedin",
-                                },
-                                {
-                                    href: "https://www.tiktok.com/@power_and_automation",
-                                    src: "/tiktok.svg",
-                                    alt: "tiktok",
-                                },
+                                { href: "https://facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/", src: "/facebook.svg", alt: "facebook" },
+                                { href: "https://instagram.com/power_and_automation/", src: "/instagram.svg", alt: "instagram" },
+                                { href: "https://youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos", src: "/youtube.svg", alt: "youtube" },
+                                { href: "https://linkedin.com/in/alexandr-pauk-7b225138/", src: "/linkedin.svg", alt: "linkedin" },
+                                { href: "https://tiktok.com/@power_and_automation", src: "/tiktok.svg", alt: "tiktok" },
                             ].map((icon) => (
-                                <a
-                                    key={icon.alt}
-                                    href={icon.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-6 h-6 relative"
-                                >
-                                    <Image
-                                        src={icon.src}
-                                        alt={icon.alt}
-                                        fill
-                                        className="object-contain"
-                                    />
+                                <a key={icon.alt} href={icon.href} target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative">
+                                    <Image src={icon.src} alt={icon.alt} fill className="object-contain" />
                                 </a>
                             ))}
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </div>
 
-            {/* модалка */}
+            {/* модалки и уведомления без изменений */}
             <AnimatePresence>
                 {modalOpen && (
                     <motion.div
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-                        initial={{opacity: 0}}
-                        animate={{opacity: 1}}
-                        exit={{opacity: 0}}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         onClick={() => setModalOpen(false)}
                     >
                         <motion.div
                             className="bg-white rounded-2xl p-6 sm:p-8 w-[90%] max-w-md shadow-2xl relative"
-                            initial={{y: 40, opacity: 0}}
-                            animate={{y: 0, opacity: 1}}
-                            exit={{y: 40, opacity: 0}}
-                            transition={{duration: 0.25}}
+                            initial={{ y: 60, opacity: 0, filter: "blur(8px)" }}
+                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                            exit={{ y: 60, opacity: 0, filter: "blur(8px)" }}
+                            transition={{ duration: 0.35, ease: "easeOut" }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <h3 className="text-xl font-bold mb-4">Дополнительные данные</h3>
@@ -217,18 +221,14 @@ export default function Contact() {
                                     type="text"
                                     placeholder="Тип услуги (по желанию)"
                                     value={extra.service}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                        setExtra({...extra, service: e.target.value})
-                                    }
+                                    onChange={(e) => setExtra({ ...extra, service: e.target.value })}
                                     className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
                                 />
                                 <input
                                     type="email"
                                     placeholder="Email (по желанию)"
                                     value={extra.email}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                        setExtra({...extra, email: e.target.value})
-                                    }
+                                    onChange={(e) => setExtra({ ...extra, email: e.target.value })}
                                     className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
                                 />
 
@@ -252,20 +252,19 @@ export default function Contact() {
                 )}
             </AnimatePresence>
 
-            {/* уведомление об успехе */}
             <AnimatePresence>
                 {success && (
                     <motion.div
                         className="fixed bottom-6 right-6 bg-[#009999] text-white px-6 py-3 rounded-xl shadow-lg"
-                        initial={{opacity: 0, y: 20}}
-                        animate={{opacity: 1, y: 0}}
-                        exit={{opacity: 0, y: 20}}
-                        transition={{duration: 0.3}}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
                     >
                         ✅ Заявка успешно отправлена!
                     </motion.div>
                 )}
             </AnimatePresence>
-        </section>
+        </motion.section>
     );
 }

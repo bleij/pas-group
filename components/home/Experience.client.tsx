@@ -1,127 +1,123 @@
 "use client";
 
-import {useState} from "react";
 import Image from "next/image";
-import {motion, AnimatePresence} from "framer-motion";
-import {Swiper, SwiperSlide} from "swiper/react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import type {CaseNode} from "@/lib/queries/experience";
+import type { CaseNode } from "@/lib/queries/experience";
 
 type Props = { items: CaseNode[] };
 
-export default function ExperienceClient({items}: Props) {
-    const [active, setActive] = useState<CaseNode | null>(null);
-
+export default function ExperienceClient({ items }: Props) {
     return (
-        <section className="w-full bg-white py-4 sm:py-10 md:py-16">
+        <motion.section
+            className="w-full bg-white py-4 sm:py-10 md:py-16 overflow-hidden"
+            initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.25 }}
+        >
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">
-                    Наш опыт
-                </h2>
-                <div className="h-1 w-24 sm:w-28 md:w-32 bg-[#009999] mb-6 sm:mb-8"></div>
+                {/* заголовок */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+                    whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                >
+                    <h2 className="text-[20px] sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6">
+                        Наш опыт
+                    </h2>
+                    <motion.div
+                        className="h-1 w-28 bg-[#009999] mb-6 sm:mb-8 origin-left"
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        viewport={{ once: true }}
+                    />
+                </motion.div>
 
                 {/* mobile slider */}
                 <div className="md:hidden">
                     <Swiper spaceBetween={12} slidesPerView={1.05}>
-                        {items.map((c) => (
+                        {items.map((c, i) => (
                             <SwiperSlide key={c.id}>
-                                <Card data={c} onMore={() => setActive(c)}/>
+                                <Card data={c} index={i} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
 
                 {/* desktop grid */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-                    {items.map((c) => (
-                        <Card key={c.id} data={c} onMore={() => setActive(c)}/>
+                <div className="hidden md:grid grid-cols-3 gap-8 md:gap-10">
+                    {items.map((c, i) => (
+                        <Card key={c.id} data={c} index={i} />
                     ))}
                 </div>
             </div>
-
-            {/* modal */}
-            <AnimatePresence>
-                {active && (
-                    <motion.div
-                        className="fixed inset-0 z-50"
-                        initial={{opacity: 0}}
-                        animate={{opacity: 1}}
-                        exit={{opacity: 0}}
-                    >
-                        <div
-                            className="absolute inset-0 bg-black/60"
-                            onClick={() => setActive(null)}
-                            aria-hidden
-                        />
-                        <motion.div
-                            className="relative z-10 mx-auto max-w-3xl w-[92%] md:w-[80%] bg-white rounded-2xl p-5 sm:p-6 md:p-8"
-                            initial={{y: 24, scale: 0.98, opacity: 0}}
-                            animate={{y: 0, scale: 1, opacity: 1}}
-                            exit={{y: 24, scale: 0.98, opacity: 0}}
-                            transition={{duration: 0.18}}
-                        >
-                            {active.featuredImage?.node?.sourceUrl && (
-                                <div className="relative w-full h-48 sm:h-56 md:h-80 mb-5 sm:mb-6">
-                                    <Image
-                                        src={active.featuredImage.node.sourceUrl}
-                                        alt={active.featuredImage.node.altText || active.title}
-                                        fill
-                                        className="object-cover rounded-xl"
-                                        priority
-                                    />
-                                </div>
-                            )}
-                            <h4 className="text-lg sm:text-xl md:text-2xl font-bold mb-3">
-                                {active.title}
-                            </h4>
-                            <p className="text-sm sm:text-base text-gray-700 whitespace-pre-line mb-5 sm:mb-6">
-                                {active.caseFields?.fullDescription ||
-                                    active.caseFields?.shortDescription}
-                            </p>
-                            <button
-                                onClick={() => setActive(null)}
-                                className="px-5 py-2 rounded-[12px] bg-gray-200 text-gray-900 hover:bg-gray-300 transition"
-                            >
-                                Закрыть
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </section>
+        </motion.section>
     );
 }
 
-function Card({data, onMore}: { data: CaseNode; onMore: () => void }) {
+function Card({ data, index }: { data: CaseNode; index: number }) {
     return (
-        <div className="flex flex-col">
-            <div className="relative w-full h-44 sm:h-52 md:h-[260px] rounded-2xl overflow-hidden">
-                {data.featuredImage?.node?.sourceUrl ? (
-                    <Image
-                        src={data.featuredImage.node.sourceUrl}
-                        alt={data.featuredImage.node.altText || data.title}
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="absolute inset-0 bg-gray-200"/>
+        <motion.div
+            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: "easeOut",
+            }}
+            viewport={{ once: true }}
+            className="flex flex-col group cursor-pointer"
+        >
+            <Link href={`/experience/${data.slug}`} className="block">
+                <motion.div
+                    whileHover={{
+                        scale: 1.04,
+                        y: -3,
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                        transition: { duration: 0.2, ease: "easeOut" },
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    className="relative w-full h-44 sm:h-52 md:h-[260px] rounded-2xl overflow-hidden bg-gray-200"
+                >
+                    {data.featuredImage?.node?.sourceUrl && (
+                        <motion.div
+                            className="absolute inset-0"
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                        >
+                            <Image
+                                src={data.featuredImage.node.sourceUrl}
+                                alt={data.featuredImage.node.altText || data.title}
+                                fill
+                                className="object-cover"
+                            />
+                        </motion.div>
+                    )}
+                </motion.div>
+
+                <h3 className="font-semibold text-base sm:text-lg md:text-xl mt-4 sm:mt-5 mb-1.5 sm:mb-2">
+                    {data.title}
+                </h3>
+
+                {data.caseFields?.shortDescription && (
+                    <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4 leading-snug">
+                        {data.caseFields.shortDescription}
+                    </p>
                 )}
-            </div>
 
-            <h3 className="font-semibold text-base sm:text-lg md:text-xl mt-4 sm:mt-5 mb-1.5 sm:mb-2">
-                {data.title}
-            </h3>
-
-            <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4 leading-snug">
-                {data.caseFields?.shortDescription}
-            </p>
-
-            <button
-                onClick={onMore}
-                className="mt-3 sm:mt-4 px-4 py-2 rounded-md bg-gray-200 text-black font-medium text-sm hover:bg-gray-300 transition self-start"
-            >
-                Подробнее
-            </button>
-        </div>
+                <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-3 sm:mt-4 inline-block px-4 py-2 rounded-md bg-[#E5E7EB] text-[#374151] font-medium text-sm hover:bg-[#A5A7AA] transition"
+                >
+                    Подробнее
+                </motion.div>
+            </Link>
+        </motion.div>
     );
 }
