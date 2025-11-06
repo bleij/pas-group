@@ -1,21 +1,44 @@
 "use client";
 
-import {motion} from "framer-motion";
+import {motion, type Variants} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import SubscribeCard from "@/components/shared/SubscribeCard";
 
-const fadeUp = {
+const fadeUp: Variants = {
     hidden: {opacity: 0, y: 30, filter: "blur(10px)"},
-    visible: (i = 0) => ({
+    visible: (i: number = 0) => ({
         opacity: 1,
         y: 0,
         filter: "blur(0px)",
-        transition: {duration: 0.6, ease: "easeOut", delay: i * 0.15},
+        transition: {duration: 0.6, ease: "easeOut" as const, delay: i * 0.15},
     }),
 };
 
-export default function CaseClient({post, moreCases}: any) {
+interface CaseFields {
+    shortDescription?: string;
+    fullDescription?: string;
+}
+
+interface CaseNode {
+    id: string;
+    slug: string;
+    title: string;
+    featuredImage?: {
+        node?: {
+            sourceUrl?: string;
+            altText?: string;
+        };
+    };
+    caseFields?: CaseFields;
+}
+
+interface Props {
+    post: CaseNode;
+    moreCases: CaseNode[];
+}
+
+export default function CaseClient({post, moreCases}: Props) {
     const cover = post.featuredImage?.node?.sourceUrl || null;
     const coverAlt = post.featuredImage?.node?.altText || post.title;
 
@@ -30,7 +53,7 @@ export default function CaseClient({post, moreCases}: any) {
                     opacity: 1,
                     y: 0,
                     filter: "blur(0px)",
-                    transition: {duration: 0.8, ease: "easeOut"},
+                    transition: {duration: 0.8, ease: "easeOut" as const},
                 },
             }}
         >
@@ -126,7 +149,7 @@ export default function CaseClient({post, moreCases}: any) {
                     <div className="h-1 w-16 bg-[#009999] mb-8"></div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {moreCases.map((p: any, i: number) => (
+                        {moreCases.map((p: CaseNode, i: number) => (
                             <motion.div
                                 key={p.id}
                                 variants={fadeUp}

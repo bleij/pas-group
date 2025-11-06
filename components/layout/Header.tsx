@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import {Variants, motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MapPin, Menu, X } from "lucide-react";
@@ -30,7 +30,7 @@ export default function Header() {
         setTimeout(() => router.push(href), 300);
     };
 
-    const fadeIn = {
+    const fadeIn: Variants = {
         hidden: { opacity: 0, filter: "blur(8px)" },
         visible: {
             opacity: 1,

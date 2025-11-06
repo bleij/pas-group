@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { SolutionNode } from "@/lib/queries/solutions";
@@ -22,7 +22,7 @@ export default function SolutionsClient({ solutions }: { solutions: SolutionNode
         }
     }, []);
 
-    const fadeIn = {
+    const fadeIn: Variants = {
         hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
         visible: {
             opacity: 1,

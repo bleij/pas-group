@@ -11,16 +11,16 @@ import "swiper/css/navigation";
 import type {CertificateNode} from "@/lib/queries/certificates";
 
 const blurFade = {
-    hidden: {opacity: 0, filter: "blur(10px)"},
+    hidden: { opacity: 0, filter: "blur(10px)" },
     visible: {
         opacity: 1,
         filter: "blur(0px)",
-        transition: {duration: 0.45, ease: [0.33, 1, 0.68, 1]},
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] as any },
     },
     exit: {
         opacity: 0,
         filter: "blur(10px)",
-        transition: {duration: 0.45, ease: [0.33, 1, 0.68, 1]},
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] as any },
     },
 };
 
@@ -76,7 +76,7 @@ export default function CertificatesModal({items}: { items: CertificateNode[] })
                             <div className="relative w-full aspect-[4/3] bg-white flex items-center justify-center overflow-hidden">
                                 <Image
                                     src={src}
-                                    alt={c.featuredImage?.node?.altText || c.title}
+                                    alt={c.featuredImage?.node?.altText || c.title || ""}
                                     fill
                                     className="object-contain max-h-[280px] md:max-h-[320px] select-none"
                                     sizes="(max-width: 768px) 100vw, 25vw"

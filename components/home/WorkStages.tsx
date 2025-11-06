@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 
 export default function WorkStages() {
     const stages = [
@@ -29,7 +29,7 @@ export default function WorkStages() {
         visible: { transition: { staggerChildren: 0.12 } },
     };
 
-    const fadeIn = {
+    const fadeIn: Variants = {
         hidden: { opacity: 0, y: 20, filter: "blur(8px)" },
         visible: {
             opacity: 1,

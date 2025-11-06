@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import {Variants, motion, AnimatePresence } from "framer-motion";
 
 export default function Contact() {
     const [form, setForm] = useState({ name: "", phone: "" });
@@ -43,13 +43,13 @@ export default function Contact() {
     }
 
     // 🔹 Анимация снизу с блюром
-    const blurUp = {
+    const blurUp: Variants = {
         hidden: { opacity: 0, y: 60, filter: "blur(10px)" },
         visible: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] },
+            transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] as const },
         },
     };
 

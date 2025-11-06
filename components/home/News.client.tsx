@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 
 type NewsItem = {
     id: string;
@@ -39,7 +39,7 @@ function formatDate(dateString: string): string {
 }
 
 export default function NewsClient({ posts }: { posts: NewsItem[] }) {
-    const fadeInUp = {
+    const fadeInUp: Variants = {
         hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
         visible: {
             opacity: 1,

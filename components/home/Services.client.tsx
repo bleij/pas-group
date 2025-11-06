@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -54,7 +54,7 @@ export default function ServicesClient({
 function ServiceRow({ title, items }: { title: string; items: ServiceNode[] }) {
     const scrollRef = useRef<HTMLDivElement | null>(null);
 
-    const fadeOnly = {
+    const fadeOnly: Variants = {
         hidden: { opacity: 0, filter: "blur(8px)" },
         visible: {
             opacity: 1,

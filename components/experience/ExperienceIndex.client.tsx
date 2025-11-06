@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import {useState, useEffect} from "react";
+import {motion} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import SubscribeCard from "@/components/shared/SubscribeCard";
+import type {Variants} from "framer-motion";
 
 type CardPost = {
     id: string;
@@ -15,36 +16,36 @@ type CardPost = {
     excerpt?: string;
 };
 
-export default function ExperienceIndexClient({ posts }: { posts: CardPost[] }) {
+export default function ExperienceIndexClient({posts}: { posts: CardPost[] }) {
     const [visible, setVisible] = useState(6);
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
 
     const handleLoadMore = () => setVisible((prev) => prev + 6);
 
-    const fadeIn = {
-        hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+    const fadeIn: Variants = {
+        hidden: {opacity: 0, y: 30, filter: "blur(10px)"},
         visible: {
             opacity: 1,
             y: 0,
             filter: "blur(0px)",
-            transition: { duration: 0.6, ease: [0.3, 0, 0.3, 1] },
+            transition: {duration: 0.6, ease: [0.3, 0, 0.3, 1] as const},
         },
     };
 
     return (
         <motion.section
             className="w-full bg-white"
-            initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
-            animate={mounted ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            initial={{opacity: 0, y: 60, filter: "blur(12px)"}}
+            animate={mounted ? {opacity: 1, y: 0, filter: "blur(0px)"} : {}}
+            transition={{duration: 0.8, ease: "easeOut"}}
         >
             <div className="max-w-7xl mx-auto">
                 {/* хлебные крошки + заголовок */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    initial={{opacity: 0, y: 20, filter: "blur(8px)"}}
+                    animate={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                    transition={{duration: 0.8, ease: "easeOut"}}
                     className="mb-8"
                 >
                     <div className="text-sm text-gray-500 mb-3">
@@ -58,12 +59,12 @@ export default function ExperienceIndexClient({ posts }: { posts: CardPost[] }) 
                     <motion.div
                         initial="hidden"
                         animate="visible"
-                        variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+                        variants={{visible: {transition: {staggerChildren: 0.15}}}}
                         className="flex flex-col gap-10"
                     >
                         {posts.slice(0, visible).map((p) => (
                             <motion.div key={p.id} variants={fadeIn}>
-                                <Card post={p} />
+                                <Card post={p}/>
                             </motion.div>
                         ))}
 
@@ -71,19 +72,19 @@ export default function ExperienceIndexClient({ posts }: { posts: CardPost[] }) 
                         <motion.div
                             variants={fadeIn}
                             className="block lg:hidden mt-4"
-                            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-                            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                            transition={{ duration: 0.7, ease: "easeOut" }}
+                            initial={{opacity: 0, y: 20, filter: "blur(6px)"}}
+                            whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                            transition={{duration: 0.7, ease: "easeOut"}}
                         >
-                            <SubscribeCard />
+                            <SubscribeCard/>
                         </motion.div>
 
                         {visible < posts.length && (
                             <motion.div variants={fadeIn} className="mt-12 flex justify-center">
                                 <motion.button
                                     onClick={handleLoadMore}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    whileHover={{scale: 1.05}}
+                                    whileTap={{scale: 0.95}}
                                     className="px-6 py-3 rounded-md text-sm font-medium border border-gray-300 hover:bg-gray-100 text-gray-700 disabled:opacity-40"
                                 >
                                     Показать больше
@@ -96,11 +97,11 @@ export default function ExperienceIndexClient({ posts }: { posts: CardPost[] }) 
                     <aside className="hidden lg:block">
                         <motion.div
                             className="sticky top-36"
-                            initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-                            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                            transition={{ duration: 0.9, ease: "easeOut" }}
+                            initial={{opacity: 0, y: 40, filter: "blur(10px)"}}
+                            whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
+                            transition={{duration: 0.9, ease: "easeOut"}}
                         >
-                            <SubscribeCard />
+                            <SubscribeCard/>
                         </motion.div>
                     </aside>
                 </div>
@@ -110,9 +111,9 @@ export default function ExperienceIndexClient({ posts }: { posts: CardPost[] }) 
 }
 
 /* ---------- безопасное изображение ---------- */
-function SafeImage({ src, alt }: { src?: string; alt?: string }) {
+function SafeImage({src, alt}: { src?: string; alt?: string }) {
     const [fallback, setFallback] = useState(false);
-    if (!src) return <div className="absolute inset-0 bg-slate-200" />;
+    if (!src) return <div className="absolute inset-0 bg-slate-200"/>;
 
     const safe = src.includes("%") ? src : encodeURI(src);
 
@@ -127,13 +128,13 @@ function SafeImage({ src, alt }: { src?: string; alt?: string }) {
                 unoptimized
                 onError={() => setFallback(true)}
             />
-            {fallback && <div className="absolute inset-0 bg-slate-200" />}
+            {fallback && <div className="absolute inset-0 bg-slate-200"/>}
         </div>
     );
 }
 
 /* ---------- карточка ---------- */
-function Card({ post }: { post: CardPost }) {
+function Card({post}: { post: CardPost }) {
     return (
         <Link
             href={`/experience/${post.slug}`}
@@ -158,7 +159,7 @@ function Card({ post }: { post: CardPost }) {
                 className="relative w-[50%] sm:w-[40%] md:w-[430px]
                    h-[180px] sm:h-[200px] md:h-[360px] flex-shrink-0 overflow-hidden"
             >
-                <SafeImage src={post.image} alt={post.alt || post.title} />
+                <SafeImage src={post.image} alt={post.alt || post.title}/>
             </div>
         </Link>
     );

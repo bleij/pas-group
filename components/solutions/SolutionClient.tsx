@@ -1,11 +1,11 @@
 "use client";
 
-import {motion} from "framer-motion";
+import {Variants, motion} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import SubscribeCard from "@/components/shared/SubscribeCard";
 
-const fadeUp = {
+const fadeUp: Variants = {
     hidden: {opacity: 0, y: 30, filter: "blur(10px)"},
     visible: (i = 0) => ({
         opacity: 1,

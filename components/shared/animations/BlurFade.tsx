@@ -1,8 +1,8 @@
 "use client"
 
-import {motion} from "framer-motion"
+import {Variants, motion} from "framer-motion"
 
-export const blurFade = {
+export const blurFade: Variants = {
     hidden: {opacity: 0, filter: "blur(12px)"},
     visible: {
         opacity: 1,

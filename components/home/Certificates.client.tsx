@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import {Variants, motion, AnimatePresence } from "framer-motion"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Navigation, Keyboard } from "swiper/modules"
 import { X } from "lucide-react"
@@ -13,19 +13,19 @@ import type { Swiper as SwiperClass } from "swiper"
 import type { CertificateNode } from "@/lib/queries/certificates"
 
 /* ---------- Универсальная анимация ---------- */
-const blurFade = {
+const blurFade: Variants = {
     hidden: { opacity: 0, filter: "blur(10px)" },
     visible: {
         opacity: 1,
         filter: "blur(0px)",
-        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] },
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] as const },
     },
     exit: {
         opacity: 0,
         filter: "blur(10px)",
-        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] },
+        transition: { duration: 0.45, ease: [0.33, 1, 0.68, 1] as const },
     },
-}
+};
 
 export default function CertificatesClient({ items, title, showMoreHref }: { items: CertificateNode[]; title?: string; showMoreHref?: string }) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null)

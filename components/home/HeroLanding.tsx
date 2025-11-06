@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {motion} from "framer-motion";
+import {Variants, motion} from "framer-motion";
 
 type Props = {
     bg?: string;
@@ -32,7 +32,7 @@ type Props = {
     descWeight?: string;
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
     hidden: {opacity: 0, y: 40},
     visible: (i = 1) => ({
         opacity: 1,

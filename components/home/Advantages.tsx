@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -28,7 +28,7 @@ export default function Advantages() {
         },
     ];
 
-    const blurUp = {
+    const blurUp: Variants = {
         hidden: { opacity: 0, y: 60, filter: "blur(10px)" },
         visible: {
             opacity: 1,

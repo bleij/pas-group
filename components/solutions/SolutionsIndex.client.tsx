@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import {Variants, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import SubscribeCard from "@/components/shared/SubscribeCard";
@@ -22,7 +22,7 @@ export default function SolutionsIndexClient({ posts }: { posts: CardPost[] }) {
     useEffect(() => setMounted(true), []);
     const handleLoadMore = () => setVisible((prev) => prev + 6);
 
-    const fadeIn = {
+    const fadeIn: Variants = {
         hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
         visible: {
             opacity: 1,

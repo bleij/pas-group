@@ -1,6 +1,7 @@
 import "./globals.css";
 import {Montserrat} from "next/font/google";
 import type {Metadata} from "next";
+import ParticleCursor from "@/components/ParticleCursor";
 
 export const metadata: Metadata = {
     title: "PAS Group",
@@ -22,6 +23,7 @@ export default function RootLayout({
     return (
         <html lang="ru" className={montserrat.variable}>
         <body className="font-sans antialiased bg-white text-gray-900">
+        <ParticleCursor/>
         {children}
         </body>
         </html>
