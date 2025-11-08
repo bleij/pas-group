@@ -1,12 +1,12 @@
 // app/partners/PartnersClient.tsx
 "use client";
 
-import {motion} from "framer-motion";
+import {Variants, motion} from "framer-motion";
 import Image from "next/image";
 import type {PartnerNode} from "@/lib/queries/partners";
 
 export default function PartnersClient({partners}: { partners: PartnerNode[] }) {
-    const blurFade = {
+    const blurFade: Variants = {
         hidden: {opacity: 0, filter: "blur(12px)", y: 30},
         visible: {
             opacity: 1,
@@ -16,7 +16,7 @@ export default function PartnersClient({partners}: { partners: PartnerNode[] }) 
         },
     };
 
-    const item = {
+    const item: Variants = {
         hidden: {opacity: 0, filter: "blur(10px)", y: 20},
         visible: {
             opacity: 1,
