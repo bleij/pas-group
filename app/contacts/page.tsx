@@ -3,6 +3,7 @@
 import Header from "@/components/layout/Header";
 import Contact from "@/components/home/Contact";
 import Footer from "@/components/layout/Footer";
+import Image from "next/image";
 import {motion} from "framer-motion";
 
 export default function ContactsPage() {
@@ -76,32 +77,70 @@ export default function ContactsPage() {
                         </p>
                     </motion.div>
 
-                    {/* Кнопки */}
                     <motion.div
-                        className="flex flex-wrap gap-4 mt-8"
+                        className="flex flex-wrap lg:flex-nowrap lg:items-start gap-4 mt-8"
                         initial={{opacity: 0, y: 20, filter: "blur(10px)"}}
                         whileInView={{opacity: 1, y: 0, filter: "blur(0px)"}}
                         transition={{duration: 0.6, ease: "easeOut", delay: 0.3}}
                         viewport={{once: true}}
                     >
-                        <a
-                            href="https://go.2gis.com/lyrGi"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-6 py-3 rounded-md bg-[#009999] hover:bg-[#007A7A] text-white font-medium transition"
-                        >
-                            Посмотреть в&nbsp;2ГИС
-                        </a>
+                        {/* основные кнопки */}
+                        <div className="flex flex-wrap gap-4">
+                            <a
+                                href="https://go.2gis.com/lyrGi"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 rounded-md bg-[#009999] hover:bg-[#007A7A] text-white font-medium transition"
+                            >
+                                Посмотреть в&nbsp;2ГИС
+                            </a>
 
-                        <a
-                            href="https://yandex.com/maps/-/CLb8FTmV"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-6 py-3 rounded-md bg-[#E5E7EB] hover:bg-[#A5A7AA] text-[#374151] font-medium transition"
-                        >
-                            Посмотреть в&nbsp;Яндекс&nbsp;картах
-                        </a>
+                            <a
+                                href="https://yandex.com/maps/-/CLb8FTmV"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 rounded-md bg-[#E5E7EB] hover:bg-[#A5A7AA] text-[#374151] font-medium transition"
+                            >
+                                Посмотреть в&nbsp;Яндекс&nbsp;картах
+                            </a>
+                        </div>
+
+                        {/* новые кнопки справа */}
+                        <div className="flex flex-wrap gap-4 lg:ml-auto">
+                            <a
+                                href="https://wa.me/77019898200"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 rounded-md bg-[#25D366] hover:bg-[#1DA851] text-white font-medium transition flex items-center justify-center gap-2"
+                            >
+                                <Image
+                                    src="/whatsapp.svg"
+                                    alt="WhatsApp"
+                                    width={20}
+                                    height={20}
+                                    className="invert brightness-0"
+                                />
+                                WhatsApp
+                            </a>
+
+                            <a
+                                href="https://t.me/pasgroup"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-6 py-3 rounded-md bg-[#0088cc] hover:bg-[#007AB8] text-white font-medium transition flex items-center justify-center gap-2"
+                            >
+                                <Image
+                                    src="/telegram.svg"
+                                    alt="Telegram"
+                                    width={20}
+                                    height={20}
+                                    className="invert brightness-0"
+                                />
+                                Telegram
+                            </a>
+                        </div>
                     </motion.div>
+
                 </div>
             </motion.section>
 

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
-import {Variants, motion, AnimatePresence } from "framer-motion";
+import { Variants, motion, AnimatePresence } from "framer-motion";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 export default function Contact() {
     const [form, setForm] = useState({ name: "", phone: "" });
@@ -53,6 +56,12 @@ export default function Contact() {
         },
     };
 
+    // 🔹 фильтр имени — только буквы и пробелы
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const onlyLetters = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
+        setForm({ ...form, name: onlyLetters });
+    };
+
     return (
         <motion.section
             id="contact"
@@ -94,27 +103,20 @@ export default function Contact() {
                                 type="text"
                                 placeholder="Ваше имя"
                                 value={form.name}
-                                onChange={(e) =>
-                                    setForm({ ...form, name: e.target.value })
-                                }
+                                onChange={handleNameChange}
                                 className="flex-1 px-5 py-4 bg-gray-100 text-black text-lg rounded-xl focus:outline-none"
                                 required
                             />
-                            <input
-                                type="tel"
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                placeholder="Номер телефона"
-                                value={form.phone}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        phone: e.target.value.replace(/\D/g, ""),
-                                    })
-                                }
-                                className="flex-1 px-5 py-4 bg-gray-100 text-black text-lg rounded-xl focus:outline-none"
-                                required
-                            />
+
+                            {/* Телефон с форматированием */}
+                            <div className="flex-1 relative">
+                                <PhoneInput
+                                    defaultCountry="kz"
+                                    value={form.phone}
+                                    onChange={(phone) => setForm({ ...form, phone })}
+                                    inputClassName="!bg-gray-100 !text-black !text-lg !rounded-xl !border-none !pl-[68px] !h-[60px] !w-full"
+                                />
+                            </div>
                         </div>
 
                         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -138,10 +140,7 @@ export default function Contact() {
                 </motion.div>
 
                 {/* 🔹 Карта */}
-                <motion.div
-                    variants={blurUp}
-                    className="relative mt-14"
-                >
+                <motion.div variants={blurUp} className="relative mt-14">
                     <a
                         href="https://go.2gis.com/OFnSC"
                         target="_blank"
@@ -182,14 +181,45 @@ export default function Contact() {
 
                         <div className="flex gap-4 mt-8 items-center">
                             {[
-                                { href: "https://facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/", src: "/facebook.svg", alt: "facebook" },
-                                { href: "https://instagram.com/power_and_automation/", src: "/instagram.svg", alt: "instagram" },
-                                { href: "https://youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos", src: "/youtube.svg", alt: "youtube" },
-                                { href: "https://linkedin.com/in/alexandr-pauk-7b225138/", src: "/linkedin.svg", alt: "linkedin" },
-                                { href: "https://tiktok.com/@power_and_automation", src: "/tiktok.svg", alt: "tiktok" },
+                                {
+                                    href: "https://facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/",
+                                    src: "/facebook.svg",
+                                    alt: "facebook",
+                                },
+                                {
+                                    href: "https://instagram.com/power_and_automation/",
+                                    src: "/instagram.svg",
+                                    alt: "instagram",
+                                },
+                                {
+                                    href: "https://youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos",
+                                    src: "/youtube.svg",
+                                    alt: "youtube",
+                                },
+                                {
+                                    href: "https://linkedin.com/in/alexandr-pauk-7b225138/",
+                                    src: "/linkedin.svg",
+                                    alt: "linkedin",
+                                },
+                                {
+                                    href: "https://tiktok.com/@power_and_automation",
+                                    src: "/tiktok.svg",
+                                    alt: "tiktok",
+                                },
                             ].map((icon) => (
-                                <a key={icon.alt} href={icon.href} target="_blank" rel="noopener noreferrer" className="w-6 h-6 relative">
-                                    <Image src={icon.src} alt={icon.alt} fill className="object-contain" />
+                                <a
+                                    key={icon.alt}
+                                    href={icon.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-6 h-6 relative"
+                                >
+                                    <Image
+                                        src={icon.src}
+                                        alt={icon.alt}
+                                        fill
+                                        className="object-contain"
+                                    />
                                 </a>
                             ))}
                         </div>
@@ -197,61 +227,70 @@ export default function Contact() {
                 </motion.div>
             </div>
 
-            {/* модалки и уведомления без изменений */}
-            <AnimatePresence>
-                {modalOpen && (
-                    <motion.div
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setModalOpen(false)}
-                    >
-                        <motion.div
-                            className="bg-white rounded-2xl p-6 sm:p-8 w-[90%] max-w-md shadow-2xl relative"
-                            initial={{ y: 60, opacity: 0, filter: "blur(8px)" }}
-                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                            exit={{ y: 60, opacity: 0, filter: "blur(8px)" }}
-                            transition={{ duration: 0.35, ease: "easeOut" }}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <h3 className="text-xl font-bold mb-4">Дополнительные данные</h3>
-                            <form onSubmit={handleFinalSubmit} className="space-y-4">
-                                <input
-                                    type="text"
-                                    placeholder="Тип услуги (по желанию)"
-                                    value={extra.service}
-                                    onChange={(e) => setExtra({ ...extra, service: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
-                                />
-                                <input
-                                    type="email"
-                                    placeholder="Email (по желанию)"
-                                    value={extra.email}
-                                    onChange={(e) => setExtra({ ...extra, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
-                                />
-
-                                <button
-                                    type="submit"
-                                    disabled={pending}
-                                    className="w-full py-3 bg-[#009999] hover:bg-[#007A7A] text-white rounded-xl font-medium transition"
-                                >
-                                    {pending ? "Отправка..." : "Отправить"}
-                                </button>
-                            </form>
-
-                            <button
+            {/* 🔹 Модалка через портал (чтобы не “залипала” внутри блока) */}
+            {typeof document !== "undefined" &&
+                createPortal(
+                    <AnimatePresence>
+                        {modalOpen && (
+                            <motion.div
+                                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
                                 onClick={() => setModalOpen(false)}
-                                className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl"
                             >
-                                ×
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                <motion.div
+                                    className="bg-white rounded-2xl p-6 sm:p-8 w-[90%] max-w-md shadow-2xl relative"
+                                    initial={{ y: 60, opacity: 0, filter: "blur(8px)" }}
+                                    animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                                    exit={{ y: 60, opacity: 0, filter: "blur(8px)" }}
+                                    transition={{ duration: 0.35, ease: "easeOut" }}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <h3 className="text-xl font-bold mb-4">Дополнительные данные</h3>
+                                    <form onSubmit={handleFinalSubmit} className="space-y-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Тип услуги (по желанию)"
+                                            value={extra.service}
+                                            onChange={(e) =>
+                                                setExtra({ ...extra, service: e.target.value })
+                                            }
+                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
+                                        />
+                                        <input
+                                            type="email"
+                                            placeholder="Email (по желанию)"
+                                            value={extra.email}
+                                            onChange={(e) =>
+                                                setExtra({ ...extra, email: e.target.value })
+                                            }
+                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
+                                        />
 
+                                        <button
+                                            type="submit"
+                                            disabled={pending}
+                                            className="w-full py-3 bg-[#009999] hover:bg-[#007A7A] text-white rounded-xl font-medium transition"
+                                        >
+                                            {pending ? "Отправка..." : "Отправить"}
+                                        </button>
+                                    </form>
+
+                                    <button
+                                        onClick={() => setModalOpen(false)}
+                                        className="absolute top-3 right-4 text-gray-400 hover:text-gray-700 text-2xl"
+                                    >
+                                        ×
+                                    </button>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>,
+                    document.body
+                )}
+
+            {/* ✅ Уведомление о успешной отправке */}
             <AnimatePresence>
                 {success && (
                     <motion.div

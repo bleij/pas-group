@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {Variants, motion} from "framer-motion";
+import { Variants, motion } from "framer-motion";
+import { useState } from "react";
+import RequestModal from "@/components/shared/RequestModal";
 
 type Props = {
     bg?: string;
@@ -33,11 +35,11 @@ type Props = {
 };
 
 const fadeUp: Variants = {
-    hidden: {opacity: 0, y: 40},
+    hidden: { opacity: 0, y: 40 },
     visible: (i = 1) => ({
         opacity: 1,
         y: 0,
-        transition: {delay: i * 0.2, duration: 0.6, ease: "easeOut"},
+        transition: { delay: i * 0.2, duration: 0.6, ease: "easeOut" },
     }),
 };
 
@@ -68,6 +70,8 @@ export default function HeroLanding({
                                         descSizeMobile = "14px",
                                         descWeight = "400",
                                     }: Props) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const finalTitleDesktop = titleSize || titleSizeDesktop;
     const finalDescDesktop = descSize || descSizeDesktop;
 
@@ -84,9 +88,9 @@ export default function HeroLanding({
             {/* фоновая анимация */}
             <motion.div
                 className="absolute inset-0"
-                initial={{filter: "blur(18px)", opacity: 0.3}}
-                animate={{filter: "blur(0px)", opacity: 1}}
-                transition={{duration: 0.8, ease: "easeOut"}}
+                initial={{ filter: "blur(18px)", opacity: 0.3 }}
+                animate={{ filter: "blur(0px)", opacity: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
             >
                 <Image
                     src={bg}
@@ -95,22 +99,16 @@ export default function HeroLanding({
                     priority
                     className="object-cover [object-position:var(--hero-pos-m)] md:[object-position:var(--hero-pos-d)]"
                 />
-
-                {/* затемнение */}
-                <div className="absolute inset-0 bg-black/20 pointer-events-none"/>
+                <div className="absolute inset-0 bg-black/20 pointer-events-none" />
             </motion.div>
 
             {/* desktop overlay */}
             <div className="pointer-events-none absolute inset-0 hidden md:block">
                 <motion.div
                     className="absolute left-0 top-0 h-full"
-                    initial={{opacity: 0, x: -320, scale: 1.02}}
-                    animate={{opacity: 1, x: 0, scale: 1}}
-                    transition={{
-                        duration: 0.8,
-                        ease: "easeOut",
-                        delay: 0.2,
-                    }}
+                    initial={{ opacity: 0, x: -320, scale: 1.02 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     style={{
                         width: overlayDesktopWidth,
                         background: `${overlayDesktopColor}${Math.round(
@@ -128,13 +126,9 @@ export default function HeroLanding({
             <div className="pointer-events-none absolute inset-0 md:hidden">
                 <motion.div
                     className="absolute left-0 top-0 h-full"
-                    initial={{opacity: 0, x: -100, scale: 1.05}}
-                    animate={{opacity: 1, x: 0, scale: 1}}
-                    transition={{
-                        duration: 1.2,
-                        ease: "easeOut",
-                        delay: 0.25,
-                    }}
+                    initial={{ opacity: 0, x: -100, scale: 1.05 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.25 }}
                     style={{
                         width: overlayMobileWidth,
                         background: `${overlayMobileColor}${Math.round(
@@ -157,7 +151,7 @@ export default function HeroLanding({
                             initial="hidden"
                             whileInView="visible"
                             variants={fadeUp}
-                            viewport={{once: true}}
+                            viewport={{ once: true }}
                             style={{
                                 fontWeight: titleWeight,
                                 fontSize: titleSizeMobile,
@@ -165,7 +159,7 @@ export default function HeroLanding({
                         >
               <span
                   className="hidden md:inline"
-                  style={{fontSize: finalTitleDesktop}}
+                  style={{ fontSize: finalTitleDesktop }}
               >
                 {title}
               </span>
@@ -178,7 +172,7 @@ export default function HeroLanding({
                             custom={1.2}
                             initial="hidden"
                             whileInView="visible"
-                            viewport={{once: true}}
+                            viewport={{ once: true }}
                             style={{
                                 fontWeight: descWeight,
                                 fontSize: descSizeMobile,
@@ -186,7 +180,7 @@ export default function HeroLanding({
                         >
               <span
                   className="hidden md:inline"
-                  style={{fontSize: finalDescDesktop}}
+                  style={{ fontSize: finalDescDesktop }}
               >
                 {description}
               </span>
@@ -196,16 +190,17 @@ export default function HeroLanding({
                         {/* кнопки */}
                         <motion.div
                             className="mt-8 flex flex-wrap gap-y-4 gap-x-4 text-lg"
-                            initial={{opacity: 0, y: 20}}
-                            whileInView={{opacity: 1, y: 0}}
-                            transition={{duration: 0.8, delay: 0.4}}
-                            viewport={{once: true}}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                            viewport={{ once: true }}
                         >
+                            {/* кнопка консультации */}
                             <motion.div
                                 className="flex"
-                                whileHover={{scale: 1.05}}
-                                whileTap={{scale: 0.95}}
-                                transition={{type: "spring", stiffness: 180, damping: 10}}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 180, damping: 10 }}
                             >
                                 <Link
                                     href="/contacts"
@@ -215,23 +210,32 @@ export default function HeroLanding({
                                 </Link>
                             </motion.div>
 
+                            {/* кнопка КП */}
                             <motion.div
                                 className="flex"
-                                whileHover={{scale: 1.05}}
-                                whileTap={{scale: 0.95}}
-                                transition={{type: "spring", stiffness: 180, damping: 10}}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 180, damping: 10 }}
                             >
-                                <Link
-                                    href="/contacts"
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
                                     className="inline-flex items-center justify-center rounded-[12px] px-6 py-3 bg-[#E5E7EB] text-[#374151] font-medium hover:bg-[#A5A7AA] transition whitespace-nowrap min-h-[48px]"
                                 >
                                     {secondaryText}
-                                </Link>
+                                </button>
                             </motion.div>
                         </motion.div>
                     </div>
                 </div>
             </div>
+
+            {/* ✅ модалка КП */}
+            <RequestModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                defaultService={null} // можно подставить название услуги, если нужно
+                title="Запросить коммерческое предложение"
+            />
         </section>
     );
 }

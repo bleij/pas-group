@@ -1,13 +1,13 @@
 "use client";
 
-import {useState} from "react";
-import {motion, AnimatePresence} from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
-// ✅ добавляем типизацию пропсов
 interface ModalContactExtraProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: { service: string; email: string }) => void;
+    onSubmit: (data: { service: string; email: string; telegram?: string }) => void;
 }
 
 export default function ModalContactExtra({
@@ -17,28 +17,33 @@ export default function ModalContactExtra({
                                           }: ModalContactExtraProps) {
     const [service, setService] = useState("");
     const [email, setEmail] = useState("");
+    const [telegram, setTelegram] = useState("");
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        onSubmit({service, email});
+        onSubmit({ service, email, telegram });
     }
 
-    return (
+    // 💡 если документа нет (SSR) — не рендерим
+    if (typeof document === "undefined") return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
                 <motion.div
-                    className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-                    initial={{opacity: 0}}
-                    animate={{opacity: 1}}
-                    exit={{opacity: 0}}
+                    className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     onClick={onClose}
                 >
                     <motion.div
-                        className="bg-white rounded-2xl p-6 sm:p-8 w-[90%] max-w-md shadow-xl relative"
+                        className="relative bg-white rounded-2xl p-6 sm:p-8 w-[90%] max-w-md shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
-                        initial={{scale: 0.95, opacity: 0}}
-                        animate={{scale: 1, opacity: 1}}
-                        exit={{scale: 0.95, opacity: 0}}
+                        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                     >
                         <h3 className="text-xl font-bold mb-4">Дополнительные данные</h3>
 
@@ -56,6 +61,13 @@ export default function ModalContactExtra({
                                 className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Telegram (по желанию, @username)"
+                                className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
+                                value={telegram}
+                                onChange={(e) => setTelegram(e.target.value)}
                             />
 
                             <button
@@ -75,6 +87,7 @@ export default function ModalContactExtra({
                     </motion.div>
                 </motion.div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body // 🔥 теперь рендерится прямо в <body>, а не в родителя Contact
     );
 }

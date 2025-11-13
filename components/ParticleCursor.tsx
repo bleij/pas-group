@@ -25,20 +25,19 @@ export default function ParticleCursor() {
         resize();
         window.addEventListener("resize", resize);
 
-        // базовая функция для добавления частицы
         const addParticle = (x: number, y: number, speedMul = 1, sizeMul = 1) => {
             const angle = Math.random() * Math.PI * 2;
-            const speed = (Math.random() * 1.2 + 0.3) * speedMul;
-            const size = (Math.random() * 4 + 2) * sizeMul;
-            const hue = 185 + Math.random() * 15; // мягкий диапазон бирюзы
+            const speed = (Math.random() * 1.1 + 0.3) * speedMul; // немного быстрее
+            const size = (Math.random() * 3 + 1.5) * sizeMul; // чуть крупнее
+            const hue = 185 + Math.random() * 15; // бирюзовый диапазон
             particles.push({
                 x,
                 y,
                 vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed - 0.5 * speedMul,
-                alpha: 1,
+                vy: Math.sin(angle) * speed - 0.4 * speedMul,
+                alpha: 0.75 + Math.random() * 0.2, // умеренная прозрачность
                 size,
-                color: `hsl(${hue}, 85%, 60%)`,
+                color: `hsl(${hue}, 80%, 60%)`,
             });
         };
 
@@ -48,10 +47,11 @@ export default function ParticleCursor() {
                 const p = particles[i];
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.02; // гравитация
-                p.alpha -= 0.015;
-                p.size *= 0.96;
-                if (p.alpha <= 0.05 || p.size < 0.5) {
+                p.vy += 0.018;
+                p.alpha -= 0.015; // живут чуть дольше
+                p.size *= 0.97;
+
+                if (p.alpha <= 0.05 || p.size < 0.3) {
                     particles.splice(i, 1);
                     continue;
                 }
@@ -59,7 +59,7 @@ export default function ParticleCursor() {
                 ctx.beginPath();
                 ctx.fillStyle = `${p.color.replace("hsl", "hsla").replace(")", `,${p.alpha})`)}`;
                 ctx.shadowColor = p.color;
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 6; // чуть сильнее свечение
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
             }
@@ -67,17 +67,16 @@ export default function ParticleCursor() {
         };
         update();
 
-        // лёгкий след
+        // лёгкий след — 2 частицы на движение
         const move = (e: MouseEvent) => {
-            for (let i = 0; i < 4; i++) addParticle(e.clientX, e.clientY);
+            for (let i = 0; i < 2; i++) addParticle(e.clientX, e.clientY);
         };
 
-        // 💥 взрыв при клике
+        // мягкий, но заметный взрыв
         const click = (e: MouseEvent) => {
-            const burstCount = 60; // количество частиц во взрыве
+            const burstCount = 30;
             for (let i = 0; i < burstCount; i++) {
-                // частицы чуть больше и быстрее
-                addParticle(e.clientX, e.clientY, 3, 1.5);
+                addParticle(e.clientX, e.clientY, 2.5, 1.3);
             }
         };
 
@@ -94,7 +93,7 @@ export default function ParticleCursor() {
     return (
         <canvas
             ref={canvasRef}
-            className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9999]"
+            className="fixed top-0 left-0 w-full h-full pointer-events-none z-[10] opacity-75"
         />
     );
 }
