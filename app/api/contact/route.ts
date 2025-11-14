@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 `;
 
         const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-        const CHAT_ID = process.env.TELEGRAM_CHAT_ID!;
+        let CHAT_ID = process.env.TELEGRAM_CHAT_ID!;
 
         const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: "POST",
@@ -24,7 +24,30 @@ export async function POST(req: NextRequest) {
 
         const telegramResponse = await res.json();
 
-        if (!telegramResponse.ok) {
+        // 🔹 Проверяем, не изменился ли ID
+        if (!telegramResponse.ok && telegramResponse.parameters?.migrate_to_chat_id) {
+            const newChatId = telegramResponse.parameters.migrate_to_chat_id;
+            console.warn("⚠️ Telegram chat migrated to:", newChatId);
+
+            // Повторяем отправку уже с новым chat_id
+            const retry = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({chat_id: newChatId, text: message}),
+            });
+
+            const retryRes = await retry.json();
+
+            if (!retryRes.ok) {
+                console.error("Telegram retry failed:", retryRes);
+                return NextResponse.json({success: false}, {status: 500});
+            }
+
+            // ⚠️ В консоли будет новый chat_id, который можно скопировать в .env
+            console.log("✅ Telegram message delivered using new chat_id:", newChatId);
+        }
+
+        if (!telegramResponse.ok && !telegramResponse.parameters?.migrate_to_chat_id) {
             console.error("Telegram error:", telegramResponse);
             return NextResponse.json({success: false}, {status: 500});
         }

@@ -10,7 +10,7 @@ import "react-international-phone/style.css";
 export default function Contact() {
     const [form, setForm] = useState({ name: "", phone: "" });
     const [modalOpen, setModalOpen] = useState(false);
-    const [extra, setExtra] = useState({ service: "", email: "" });
+    const [extra, setExtra] = useState({ service: "", email: "", telegram: "" });
     const [pending, setPending] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -37,7 +37,7 @@ export default function Contact() {
         if (res.ok) {
             setSuccess(true);
             setForm({ name: "", phone: "" });
-            setExtra({ service: "", email: "" });
+            setExtra({ service: "", email: "", telegram: "" });
             setModalOpen(false);
             setTimeout(() => setSuccess(false), 4000);
         } else {
@@ -45,7 +45,13 @@ export default function Contact() {
         }
     }
 
-    // 🔹 Анимация снизу с блюром
+    // 🔹 фильтр имени — только буквы и пробелы
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const onlyLetters = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
+        setForm({ ...form, name: onlyLetters });
+    };
+
+    // 🔹 анимация появления секций
     const blurUp: Variants = {
         hidden: { opacity: 0, y: 60, filter: "blur(10px)" },
         visible: {
@@ -54,12 +60,6 @@ export default function Contact() {
             filter: "blur(0px)",
             transition: { duration: 0.8, ease: [0.33, 1, 0.68, 1] as const },
         },
-    };
-
-    // 🔹 фильтр имени — только буквы и пробелы
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const onlyLetters = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
-        setForm({ ...form, name: onlyLetters });
     };
 
     return (
@@ -108,7 +108,6 @@ export default function Contact() {
                                 required
                             />
 
-                            {/* Телефон с форматированием */}
                             <div className="flex-1 relative">
                                 <PhoneInput
                                     defaultCountry="kz"
@@ -178,56 +177,11 @@ export default function Contact() {
                                 zakup@pasgroup.kz
                             </p>
                         </div>
-
-                        <div className="flex gap-4 mt-8 items-center">
-                            {[
-                                {
-                                    href: "https://facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/",
-                                    src: "/facebook.svg",
-                                    alt: "facebook",
-                                },
-                                {
-                                    href: "https://instagram.com/power_and_automation/",
-                                    src: "/instagram.svg",
-                                    alt: "instagram",
-                                },
-                                {
-                                    href: "https://youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos",
-                                    src: "/youtube.svg",
-                                    alt: "youtube",
-                                },
-                                {
-                                    href: "https://linkedin.com/in/alexandr-pauk-7b225138/",
-                                    src: "/linkedin.svg",
-                                    alt: "linkedin",
-                                },
-                                {
-                                    href: "https://tiktok.com/@power_and_automation",
-                                    src: "/tiktok.svg",
-                                    alt: "tiktok",
-                                },
-                            ].map((icon) => (
-                                <a
-                                    key={icon.alt}
-                                    href={icon.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-6 h-6 relative"
-                                >
-                                    <Image
-                                        src={icon.src}
-                                        alt={icon.alt}
-                                        fill
-                                        className="object-contain"
-                                    />
-                                </a>
-                            ))}
-                        </div>
                     </motion.div>
                 </motion.div>
             </div>
 
-            {/* 🔹 Модалка через портал (чтобы не “залипала” внутри блока) */}
+            {/* 🔹 Модалка */}
             {typeof document !== "undefined" &&
                 createPortal(
                     <AnimatePresence>
@@ -267,6 +221,15 @@ export default function Contact() {
                                             }
                                             className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
                                         />
+                                        <input
+                                            type="text"
+                                            placeholder="Telegram (по желанию, @username)"
+                                            value={extra.telegram}
+                                            onChange={(e) =>
+                                                setExtra({ ...extra, telegram: e.target.value })
+                                            }
+                                            className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
+                                        />
 
                                         <button
                                             type="submit"
@@ -291,19 +254,23 @@ export default function Contact() {
                 )}
 
             {/* ✅ Уведомление о успешной отправке */}
-            <AnimatePresence>
-                {success && (
-                    <motion.div
-                        className="fixed bottom-6 right-6 bg-[#009999] text-white px-6 py-3 rounded-xl shadow-lg"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        ✅ Заявка успешно отправлена!
-                    </motion.div>
+            {typeof document !== "undefined" &&
+                createPortal(
+                    <AnimatePresence>
+                        {success && (
+                            <motion.div
+                                className="fixed bottom-6 right-6 bg-[#009999] text-white px-6 py-3 rounded-xl shadow-lg z-[10000]"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                ✅ Заявка успешно отправлена!
+                            </motion.div>
+                        )}
+                    </AnimatePresence>,
+                    document.body
                 )}
-            </AnimatePresence>
         </motion.section>
     );
 }

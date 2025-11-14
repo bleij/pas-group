@@ -26,6 +26,35 @@ export default function RequestModal({
     const [pending, setPending] = useState(false);
     const [success, setSuccess] = useState(false);
 
+    // 🔹 автоформатирование телефона
+    const formatPhone = (value: string) => {
+        const digits = value.replace(/\D/g, "");
+        if (!digits) return "";
+
+        let formatted = "+";
+
+        // Казахстан / Россия (+7)
+        if (digits.startsWith("7")) {
+            formatted = "+7";
+            if (digits.length > 1) formatted += ` (${digits.slice(1, 4)}`;
+            if (digits.length >= 5) formatted += `) ${digits.slice(4, 7)}`;
+            if (digits.length >= 8) formatted += `-${digits.slice(7, 9)}`;
+            if (digits.length >= 10) formatted += `-${digits.slice(9, 11)}`;
+        } else {
+            // остальные страны
+            formatted += digits;
+        }
+
+        return formatted;
+    };
+
+    // 🔹 фильтр имени (только буквы и пробелы)
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const onlyLetters = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
+        setForm({ ...form, name: onlyLetters });
+    };
+
+    // 🔹 обработка отправки формы
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setPending(true);
@@ -60,14 +89,9 @@ export default function RequestModal({
         }
     }
 
-    // 🔹 только буквы для имени
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const onlyLetters = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
-        setForm({ ...form, name: onlyLetters });
-    };
-
     return (
         <>
+            {/* 🔹 Модалка */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -87,7 +111,7 @@ export default function RequestModal({
                         >
                             <h3 className="text-xl font-bold mb-4">{title}</h3>
 
-                            {/* если defaultService передан — просто текст, иначе редактируемое поле */}
+                            {/* если передана услуга — просто текст */}
                             {defaultService ? (
                                 <p className="text-sm mb-4 text-gray-600">
                                     Услуга:{" "}
@@ -100,12 +124,15 @@ export default function RequestModal({
                                     type="text"
                                     placeholder="Введите услугу"
                                     value={form.service}
-                                    onChange={(e) => setForm({ ...form, service: e.target.value })}
+                                    onChange={(e) =>
+                                        setForm({ ...form, service: e.target.value })
+                                    }
                                     className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none mb-4"
                                     required
                                 />
                             )}
 
+                            {/* форма */}
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <input
                                     type="text"
@@ -118,12 +145,12 @@ export default function RequestModal({
 
                                 <input
                                     type="tel"
-                                    placeholder="Номер телефона"
+                                    placeholder="+7 (___) ___-__-__"
                                     value={form.phone}
                                     onChange={(e) =>
                                         setForm({
                                             ...form,
-                                            phone: e.target.value.replace(/\D/g, ""),
+                                            phone: formatPhone(e.target.value),
                                         })
                                     }
                                     className="w-full px-4 py-3 bg-gray-100 rounded-xl focus:outline-none"
@@ -179,7 +206,7 @@ export default function RequestModal({
                 )}
             </AnimatePresence>
 
-            {/* уведомление */}
+            {/* 🔔 уведомление */}
             <AnimatePresence>
                 {success && (
                     <motion.div
