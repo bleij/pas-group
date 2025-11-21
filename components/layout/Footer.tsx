@@ -61,13 +61,7 @@ export default function Footer() {
                             ["linkedin", "https://www.linkedin.com/in/alexandr-pauk-7b225138/"],
                             ["tiktok", "https://www.tiktok.com/@power_and_automation"],
                         ].map(([name, link]) => (
-                            <a
-                                key={name}
-                                href={link}
-                                target="_blank"
-                                aria-label={name}
-                                className="block w-10 h-10"
-                            >
+                            <a key={name} href={link} target="_blank" aria-label={name} className="block w-10 h-10">
                                 <Image
                                     src={`/${name}.svg`}
                                     alt={name}
@@ -80,14 +74,31 @@ export default function Footer() {
                     </div>
 
                     <a href="/privacy" className="underline text-[12px]">Политика конфиденциальности</a>
+
                     <p className="mt-4 text-[14px] text-[#444]">© 2025 PAS All rights reserved.</p>
+
+                    {/* MOBILE ADB */}
+                    <div className="flex items-center gap-2 mt-4">
+                        <span className="text-[12px] text-[#444]">created by</span>
+                        <a href="https://adbit.kz" target="_blank" rel="noopener noreferrer">
+                            <div className="w-[72px] h-[36px] relative">
+                                <Image
+                                    src="/adb-logo.svg"
+                                    alt="ADB"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             {/* ===== DESKTOP (md+) ===== */}
             <div className="hidden md:block">
                 <div
-                    className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-3 gap-12 items-start text-[#111] leading-snug">
+                    className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-3 gap-12 items-start text-[#111] leading-snug"
+                >
                     <div className="flex items-start">
                         <Image
                             src="/logo.png"
@@ -109,9 +120,12 @@ export default function Footer() {
                             <a href="tel:+77713082800" className="block hover:underline">+7 771 30 82 800</a>
                         </div>
                         <div className="space-y-3">
-                            <a href="mailto:director@pasgroup.kz"
-                               className="block hover:underline">director@pasgroup.kz</a>
-                            <a href="mailto:zakup@pasgroup.kz" className="block hover:underline">zakup@pasgroup.kz</a>
+                            <a href="mailto:director@pasgroup.kz" className="block hover:underline">
+                                director@pasgroup.kz
+                            </a>
+                            <a href="mailto:zakup@pasgroup.kz" className="block hover:underline">
+                                zakup@pasgroup.kz
+                            </a>
                         </div>
                     </div>
 
@@ -129,18 +143,35 @@ export default function Footer() {
                                className="hover:underline">Instagram</a>
                             <a href="https://www.facebook.com/POWER-AUTOMATION-SOLUTIONS-LLP-114956666727830/"
                                target="_blank" className="hover:underline">Facebook</a>
-                            <a href="https://www.youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos" target="_blank"
-                               className="hover:underline">YouTube</a>
-                            <a href="https://www.linkedin.com/in/alexandr-pauk-7b225138/" target="_blank"
-                               className="hover:underline">LinkedIn</a>
-                            <a href="https://www.tiktok.com/@power_and_automation" target="_blank"
-                               className="hover:underline">TikTok</a>
+                            <a href="https://www.youtube.com/channel/UC4_7_eaWfuoiPOH9y7BlUXA/videos"
+                               target="_blank" className="hover:underline">YouTube</a>
+                            <a href="https://www.linkedin.com/in/alexandr-pauk-7b225138/"
+                               target="_blank" className="hover:underline">LinkedIn</a>
+                            <a href="https://www.tiktok.com/@power_and_automation"
+                               target="_blank" className="hover:underline">TikTok</a>
                         </div>
                     </div>
                 </div>
 
+                {/* ===== DESKTOP BOTTOM BAR ===== */}
                 <div className="max-w-7xl mx-auto px-6 pb-12 flex justify-between items-center text-[14px] text-[#444]">
                     <a href="/privacy" className="hover:underline">Политика конфиденциальности</a>
+
+                    {/* ADB по центру */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-[12px] text-[#444]">created by</span>
+                        <a href="https://adbit.kz" target="_blank" rel="noopener noreferrer">
+                            <div className="w-[92px] h-[36px] relative">
+                                <Image
+                                    src="/adb-logo.svg"
+                                    alt="ADB"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                        </a>
+                    </div>
+
                     <p>© 2025 PAS All rights reserved.</p>
                 </div>
             </div>
